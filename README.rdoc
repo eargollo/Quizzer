@@ -1,32 +1,41 @@
-= quizzer
+= Quizzer
 
-* http://github.com/#{github_username}/#{project_name}
+* http://github.com/eargollo/Quizzer
 
 == DESCRIPTION:
 
-FIX (describe your package)
+A simple language quiz application
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+Development has just started. Features to come then:
+
+* Add words/meaning (one by one/batch)
+* Quiz periodically for word/meaning
+* Record statistics and avoid well known words
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+  Quizzer is supposed to become a program to help 
+  learning languages through a periodic quiz for
+  vocabulary. It will record statistics so that 
+  the user knows the words that are memorized and
+  the ones he fails the most.
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+* Ruby
+* Ruby Green Shoes
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+* Yet to be done :-)
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2011 FIXME full name
+Copyright (c) 2011 Eduardo Argollo
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
