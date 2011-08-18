@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
-class TestQuizzer < Test::Unit::TestCase
+class TestQuestion < Test::Unit::TestCase
 
   def setup
   end

@@ -20,63 +20,40 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
+require "controller/question"
+
 module Quizzer
   module Controller
-    class Question
-      def initialize(question, options, answer)
-        @question = question
-        @options = options   
-        @answer = answer
-        @listeners = []
-        @attempt = 0
+    class QuestionsManager
+      QUESTION_DEFAULT = {:answers => 4, :order => :both}
+      
+      def initialize(dictionary)
+        @dictionary = dictionary   
       end
       
-      def option(id=nil)
-        id = @answer if id == nil
-        return @options[id]
+      def get_question(options = {})
+        qoptions = QUESTION_DEFAULT.merge(options)
+        return generate_question(qoptions)
       end
-      
-      def question
-        title
-      end
-      
-      def title
-        return @question
-      end
-      
-      def options
-        return @options
-      end
-      
-      def answers
-        options
-      end
-      
-      def size
-        @options.size
-      end
-      
-      def correct?(id)
-        @attempt = @attempt + 1
-        @listeners.each {|al| al.answer_trigger(self, id, @attempt, id == @answer)}
-        return id == @answer
-      end
-      
-      def correct
-        return @answer
-      end
-      
-      def to_s
-        st = "Question: #{self.title}\n" 
-        self.answers.each_with_index do |el, i|
-          st += "\t#{i+1}) #{el}\n"
+
+      def generate_question(options)
+        word_count = @dictionary.size
+        words = []
+        attempts = options[:answers] * 100
+        raise "Dictionary does not have enough words" if word_count < options[:answers]
+        while words.size < options[:answers]
+          word = dict.retrieve(:id => rand(word_count)) 
+          #puts "Try word '#{t[0]}' - '#{t[1]}'"
+          #Check if word or meaning are duplicated
+          #TODO: Check if word or meaning are duplicated
+          
+          #Add word to list
+          words << word
         end
-        return st
+        #Compose question 
+        q = Question.new("How are you?", ["Good", "So so", "Bad"], 0)
+        return q
       end
-      
-      def add_listener(listener)
-        @listeners << listener
-      end    
     end
   end
 end

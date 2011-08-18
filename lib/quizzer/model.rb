@@ -1,11 +1,11 @@
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
-require 'controller/question'
-require 'controller/questions_manager'
-  
+require 'model/word'
+require 'model/dictionary'
+
 module Quizzer
-  module Controller
+  module Model
     VERSION = '0.0.1'
   end
 end
