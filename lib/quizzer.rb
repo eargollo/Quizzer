@@ -3,6 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 require "quizzer/controller"
 require "quizzer/model"
+require "quizzer/tools"
 
 module Quizzer
   VERSION = '0.0.1'
@@ -13,15 +14,35 @@ module Quizzer
     def self.run(argv, env, configuration)
       puts "Quizzer"
       
-      options = DEFAULTS
+      options = Tools::CommandlineParser.parse(File.basename($0), argv)
+      options = DEFAULTS.merge(options)
+      
       options[:dict_dbfile] = File.expand_path(options[:dict_dbfile])
       
       if !File.exists?(File.dirname(options[:dict_dbfile]))
-        puts "DOES NOT"
         Main.init(options)
       end
       
       dictionary = Model::Dictionary.new(options[:dict_dbfile])
+      
+      #If set to import, import file and end execution
+      if options[:action] == :import
+        options[:file] = File.expand_path(options[:file])
+        puts "Importing CSV file: #{options[:file]}"
+        if options[:duplicate] == :replace
+          puts "   Replacing words if existent"
+        else
+          puts "   Keeping existent words"
+        end
+        if !File.exists?(options[:file])
+          raise "Could not import file #{file}: File not found"
+        end
+        newwords = dictionary.size
+        imported = dictionary.insert_csv(options[:file], :duplicate => options[:duplicate])
+        newwords = dictionary.size - newwords
+        puts "#{imported.size} words parsed and #{newwords} new words added"
+        return 0
+      end
       
       #dictionary = 
       qm = Controller::QuestionsManager.new(dictionary)

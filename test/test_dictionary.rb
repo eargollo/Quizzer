@@ -28,6 +28,16 @@ class TestDictionary < Test::Unit::TestCase
     end
   end
   
+  def test_existing
+    dict = Quizzer::Model::Dictionary.new(File.dirname(__FILE__) + "/fixtures/dictionary.pstore")
+    assert_equal(10, dict.size)
+    (0.. DB_WORDS.size - 1).each do |i|
+      word = dict.retrieve(:id => i)
+      assert_equal(DB_WORDS[i][0], word.word)
+      assert_equal(DB_WORDS[i][1], word.meaning)
+    end
+  end
+  
   def test_initialize
     dict = Quizzer::Model::Dictionary.new(DB_FILE)
     DB_WORDS.each do |data|

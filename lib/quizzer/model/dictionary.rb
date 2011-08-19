@@ -45,7 +45,7 @@ module Quizzer
               @db["data"] = {}
             end
           else
-            @db.transation(true) do
+            @db.transaction(true) do
               @db["data"].each do |k, d|
                 word = Word.new(d)
                 @words[word.key] = word

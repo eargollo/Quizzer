@@ -20,41 +20,39 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
-require "controller/question"
+require 'optparse'
 
 module Quizzer
-  module Controller
-    class QuestionsManager
-      QUESTION_DEFAULT = {:answers => 4, :order => :both}
-      
-      def initialize(dictionary)
-        @dictionary = dictionary   
-      end
-      
-      def get_question(options = {})
-        qoptions = QUESTION_DEFAULT.merge(options)
-        return generate_question(qoptions)
-      end
-
-      def generate_question(options)
-        word_count = @dictionary.size
-        words = []
-        attempts = options[:answers] * 100
-        raise "Dictionary does not have enough words" if word_count < options[:answers]
-        while words.size < options[:answers]
-          word = @dictionary.retrieve(:id => rand(word_count)) 
-
-          #Check if word or meaning are duplicated
-          #TODO: Check if word or meaning are duplicated
+  module Tools
+    class CommandlineParser
+      def self.parse(progname, args)
+        options = {:action => :run, :duplicate => :ignore}
+        
+        opts = OptionParser.new do |parser|
+          parser.banner = "Usage: #{progname} [options]"
+          parser.separator "Specific options:"
           
-          #Add word to list
-          words << word
+          parser.on("-i", "--import [CSVFILE]", "Import words in a CSV file") do |file|
+            options[:action] = :import
+            options[:file] = file
+          end
+          
+          parser.on("-h", "--help", "Show this message") do
+            puts parser
+            exit(0)
+          end
+          
+          parser.on("-o", "--[no-]overwrite", "Overwrite when importing or inserting duplicated words") do |ow|
+            if ow
+              options[:duplicate] = :replace
+            else
+              options[:duplicate] = :ignore
+            end
+          end
         end
-        answer = rand(words.size)
-        answers = words.map {|word| word.meaning} 
-        #Compose question 
-        q = Question.new(words[answer].word, answers, answer)
-        return q
+        
+        opts.parse!(args)
+        return(options)
       end
     end
   end
