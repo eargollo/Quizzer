@@ -41,6 +41,10 @@ module Quizzer
         @data[:word]
       end
       
+      def word
+        @data[:word]
+      end
+      
       def [](key)
       	@data[key]
       end
@@ -80,26 +84,35 @@ module Quizzer
         @data = data.dup
       end
       
+      def dump
+        @data
+      end
+      
       private
       def parse(data)
         raise "Word is required" if data[:word] == nil
         raise "Meaning is required" if data[:meaning] == nil
-    	  @data = {}
-        @data[:original] = data.dup
-        parts = data[:word].split(" ")
-        possible_article = parts[0].strip.downcase
-        if GENDERS.keys.include?(possible_article)
-          @data[:type] = :substantive
-          @data[:gender] = GENDERS[possible_article]
-          @data[:article] = possible_article
-      	  @data[:word] = data[:word]
-      	  @data[:word_parsed] = parts[1..-1].join(" ").strip
-      	  @data[:meaning] = data[:meaning]
-      	else
-          @data[:type] = :unknown
-      	  @data[:word] = data[:word]
-      	  @data[:word_parsed] = data[:word]
-      	  @data[:meaning] = data[:meaning]	  
+        if data[:version] != nil
+          @data = data.dup
+        else
+          @data = {}
+          @data[:version] = VERSION
+          @data[:original] = data.dup
+          parts = data[:word].split(" ")
+          possible_article = parts[0].strip.downcase
+          if GENDERS.keys.include?(possible_article)
+            @data[:type] = :substantive
+            @data[:gender] = GENDERS[possible_article]
+            @data[:article] = possible_article
+            @data[:word] = data[:word].strip
+            @data[:word_parsed] = parts[1..-1].join(" ").strip
+            @data[:meaning] = data[:meaning].strip
+          else
+            @data[:type] = :unknown
+            @data[:word] = data[:word].strip
+            @data[:word_parsed] = data[:word].strip
+            @data[:meaning] = data[:meaning].strip    
+          end
         end
       end
     end

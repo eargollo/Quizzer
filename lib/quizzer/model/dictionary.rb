@@ -21,6 +21,7 @@
 #THE SOFTWARE.
 
 require 'pstore'
+require 'csv'
 
 require "model/word"
 
@@ -28,23 +29,34 @@ module Quizzer
   module Model
     class Dictionary
       def initialize(dbfile)
+        @semaphore = Mutex.new
         if !File.exists?(File.dirname(dbfile))
           raise "Path #{File.expand_path(File.dirname(dbfile))} does not exist."
         end
+        
+        first_time = !File.exists?(dbfile)
+        
         @db = PStore.new(dbfile)
-        @db.transaction do
-          @db[:created_at] = Time.now
-          @db["data"] = {}
+        @words = {}
+        @semaphore.synchronize do
+          if first_time
+            @db.transaction do
+              @db[:created_at] = Time.now
+              @db["data"] = {}
+            end
+          else
+            @db.transation(true) do
+              @db["data"].each do |k, d|
+                word = Word.new(d)
+                @words[word.key] = word
+              end
+            end
+          end
         end
       end
       
       def size
-        sz = -1
-      
-        @db.transaction(true) do 
-          sz = @db["data"].size
-        end
-        return sz
+        return @words.size
       end
       
       def retrieve(options = {})
@@ -52,9 +64,8 @@ module Quizzer
         if options[:id]
           #Get the element at a specific position in hash
           word = nil
-          @db.transaction(true) do  # begin read-only transaction, no changes allowed
-            #TODO: Check if it is greater than size
-            word = @db["data"].values[options[:id]]
+          @semaphore.synchronize do
+            word = @words.values[options[:id]]
           end
           return word
         end
@@ -62,30 +73,88 @@ module Quizzer
         return words
       end
       
-      
-      
-      def insert(data)
+      #Options: :duplicate - :ignore, :replace, :fail - default :fail
+      def insert(data, options ={})
+        options = {:duplicate => :fail}.merge(options)
         word = nil
         if data.is_a?(Hash)
           word = Word.new(data)
         else
-          if data.is_a?(Word)
-            word = data
-          end          
+          if data.is_a?(Array)
+            insert_batch(data, options)
+          else
+            if data.is_a?(Word)
+              word = data
+            else
+              raise "It is not possible to insert data of type #{data.class}"
+            end          
+          end
         end
         
         raise "Could not parse data #{data.inspect}" if word == nil
-        @db.transaction do
-          raise "Word already exists" if @db[word.key] != nil
-          @db["data"][word.key] = word
+
+        @semaphore.synchronize do
+          if @words[word.key] == nil || options[:duplicate] == :replace
+            @db.transaction do
+              @db["data"][word.key] = word.dump
+              @words[word.key] = word
+            end
+          else
+            if options[:duplicate] ==:fail 
+              raise "Word #{word} already exists" 
+            end
+          end
         end
+        
         return word
       end
       
-      #TODO: Insert a word
-      #TODO: Insert an array of words
-      #TODO: Insert an csv file
-      #TODO: Insert an array of hash elements representing words
+      def insert_batch(data, options = {})
+        options = {:duplicate => :fail}.merge(options)
+        words = []
+        data.each do |el|
+          if el.is_a?(Hash)
+            words << Word.new(el)
+          else
+            if el.is_a?(Word)
+              words << el
+            else
+              raise "It is not possible to add data of type #{el.class} to the dictionary"
+            end
+          end
+        end
+        
+        @semaphore.synchronize do
+          old_words = @words.dup
+          @db.transaction do
+            words.each do |word|
+              if @db["data"][word.key] == nil || options[:duplicate] == :replace
+                @db["data"][word.key] = word.dump
+                @words[word.key] = word
+              else
+                if options[:duplicate] == :fail
+                  @words = old_words
+                  raise "Word #{word} already exists" 
+                end
+              end
+            end
+          end
+        end
+        return words
+      end
+      
+      def insert_csv(filename, options = {})
+        options = {:duplicate => :fail}.merge(options)
+        words = []
+        
+        data = CSV.read(filename)
+        data.each do |el|
+          if el.size > 1 && el[0][0] != "#"[0]
+            words << Word.new(:word => el[0], :meaning => el[1])
+          end
+        end
+        insert_batch(words, options)
+      end
     end
   end
 end
