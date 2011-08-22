@@ -14,7 +14,7 @@ At the current release (0.0.1) it is possible to:
   * File should have word,meaning one per line
   * In order to import execute bin/quizzer -i [FILE]
 * Quizz words/meaning non-stop using RedShoes
-  * Run quizzer_red.bat in windoes
+  * Run quizzer_red.bat in windows
   * Run shoes lib/quizzer_red.rb in linux
 
 Development has just started. Features to come then:
