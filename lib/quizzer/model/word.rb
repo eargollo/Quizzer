@@ -104,14 +104,14 @@ module Quizzer
             @data[:type] = :substantive
             @data[:gender] = GENDERS[possible_article]
             @data[:article] = possible_article
-            @data[:word] = data[:word].strip
-            @data[:word_parsed] = parts[1..-1].join(" ").strip
-            @data[:meaning] = data[:meaning].strip
+            @data[:word] = data[:word].strip.unpack("C*").pack("U*")
+            @data[:word_parsed] = parts[1..-1].join(" ").strip.unpack("C*").pack("U*")
+            @data[:meaning] = data[:meaning].strip.unpack("C*").pack("U*")
           else
             @data[:type] = :unknown
-            @data[:word] = data[:word].strip
-            @data[:word_parsed] = data[:word].strip
-            @data[:meaning] = data[:meaning].strip    
+            @data[:word] = data[:word].strip.unpack("C*").pack("U*")
+            @data[:word_parsed] = data[:word].strip.unpack("C*").pack("U*")
+            @data[:meaning] = data[:meaning].strip.unpack("C*").pack("U*")    
           end
         end
       end

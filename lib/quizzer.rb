@@ -4,6 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require "quizzer/controller"
 require "quizzer/model"
 require "quizzer/tools"
+#require "quizzer/view"
 
 module Quizzer
   VERSION = '0.0.1'
@@ -47,11 +48,17 @@ module Quizzer
       #dictionary = 
       qm = Controller::QuestionsManager.new(dictionary)
       delay = 10
-      while true
-        question = qm.get_question
-        puts question.to_s
-        sleep(delay)
-      end
+      #while true
+      #  question = qm.get_question
+      #  puts question.to_s
+      #  sleep(delay)
+      #end
+      
+      #Start graphic
+#      Quizzer::View.add_controller(:dictionary, dictionary)
+#      View.add_controller(:manager, qm)
+#      Shoes.app :width => 400, :height => 400, :title => 'Language Quizzer' #, :hidden => true
+
       return 0
     end
     

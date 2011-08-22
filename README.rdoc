@@ -8,10 +8,21 @@ A simple language quiz application
 
 == FEATURES/PROBLEMS:
 
+At the current release (0.0.1) it is possible to:
+
+* Add words/meanings through a CSV file
+  * File should have word,meaning one per line
+  * In order to import execute bin/quizzer -i [FILE]
+* Quizz words/meaning non-stop using RedShoes
+  * Run quizzer_red.bat in windoes
+  * Run shoes lib/quizzer_red.rb in linux
+
 Development has just started. Features to come then:
 
-* Add words/meaning (one by one/batch)
-* Quiz periodically for word/meaning
+* Quizz from meaning to several words
+* Check for duplicated answer
+* Work with GreenShoes
+* Quiz periodically for word/meaning (go to tray)
 * Record statistics and avoid well known words
 
 == SYNOPSIS:
@@ -24,12 +35,27 @@ Development has just started. Features to come then:
 
 == REQUIREMENTS:
 
+RedShoes version:
+
+* RedShoes
+
+GreenShoes version (still not working)
+
 * Ruby
-* Ruby Green Shoes
+* Ruby Green Shoes gem
 
 == INSTALL:
 
-* Yet to be done :-)
+RedShoes version:
+
+* Download and install Shoes from http://shoesrb.com/
+* Put Shoes on your system PATH
+* Windows: Execute 'bin\quizzer_red.bat'
+* Linux: Execute 'shoes lib/quizzer_red.rb' 
+
+GreenShoes
+
+* NOT FUNCTIONAL YET!
 
 == LICENSE:
 

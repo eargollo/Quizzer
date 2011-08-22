@@ -1,4 +1,9 @@
-=== 0.0.1 2011-08-17
+=== 0.0.1 2011-08-22
 
-* 1 major enhancement:
-  * Initial release
+* First revision working with RedShoes
+  * Asks continuously questions
+  * For adding words to the dictionary it is necessary to use quizzer
+  * For running the graphic quizzer run bin/quizzer_red.bat
+  * It is not very stable in Windows (I believe it is a shoes problem)
+  * Added the basis for using it within GreeShoes
+  * NO statistics
