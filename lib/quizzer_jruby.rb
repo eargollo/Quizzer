@@ -4,6 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require "quizzer/controller"
 require "quizzer/model"
 require "quizzer/tools"
+require "quizzer/view_jruby"
 
 module Quizzer
   VERSION = '0.0.1'
@@ -12,6 +13,8 @@ module Quizzer
   
   class Main
     def self.run(argv, env, configuration)
+      puts "Quizzer"
+      
       options = Tools::CommandlineParser.parse(File.basename($0), argv)
       options = DEFAULTS.merge(options)
       
@@ -43,9 +46,18 @@ module Quizzer
         puts "#{imported.size} words parsed and #{newwords} new words added"
         return 0
       end
-
+      
+      #dictionary =
+      puts "HERE"
       qm = Controller::QuestionsManager.new(dictionary)
-      #Start view
+      delay = 10
+      #while true
+      #  question = qm.get_question
+      #  puts question.to_s
+      #  sleep(delay)
+      #end
+      
+      #Start graphic
       Quizzer::View.add_controller(:dictionary, dictionary)
       Quizzer::View.add_controller(:manager, qm)
       

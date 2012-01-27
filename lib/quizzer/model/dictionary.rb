@@ -22,6 +22,7 @@
 
 require 'pstore'
 require 'csv'
+require 'thread'
 
 require "model/word"
 
