@@ -37,6 +37,7 @@ module Quizzer
         super("Quizzer")
         @@db = Quizzer::View.get_controller(:dictionary)
         @@qm = Quizzer::View.get_controller(:manager)
+        self.initStats
         self.initUI
       end
     
@@ -46,24 +47,46 @@ module Quizzer
         
         @label = JLabel.new
         @in_panel = JPanel.new(GridLayout.new)
+        @south_label = JLabel.new
         self.getContentPane.add(@label, BorderLayout::NORTH);
-        self.getContentPane.add(JLabel.new("Database has #{@@db.size} definitions"), BorderLayout::SOUTH);
+        self.getContentPane.add(@south_label, BorderLayout::SOUTH);
         ask(@@qm.get_question)
       end
       
+      def initStats
+        @stats = { :error_attempt => []}
+        [:questions, :correct, :error].each do |t|
+          @stats[t] = 0
+        end
+      end
+      
+      def statsText
+        "Correct answered #{@stats[:correct]}/#{@stats[:questions]} Attempt map #{@stats[:error_attempt].join('/')}"
+      end
+      
       def ask(question)
+        attempt = 0
+        
         #Set Question title
         @label.setText(question.title)
+        @south_label.setText(self.statsText)
         
         @in_panel.removeAll
         @in_panel.getLayout.setRows(question.answers.size)
         @in_panel.getLayout.setColumns(1)
         question.answers.each_with_index.each do |q, i|
           button = ActionButton.new(q) do
+            @stats[:questions] += 1 if attempt == 0
+            
             if question.correct?(i)
+              @stats[:correct] += 1 if attempt == 0 
               button.setBackground(java.awt.Color::green)
               ask(@@qm.get_question)
             else
+              @stats[:error] += 1 if attempt == 0
+              @stats[:error_attempt][attempt] = 0 if @stats[:error_attempt][attempt] == nil
+              @stats[:error_attempt][attempt] += 1
+              attempt += 1
               button.setBackground(java.awt.Color::red)
             end
             button.setEnabled(false)
