@@ -6,8 +6,6 @@ require "quizzer/model"
 require "quizzer/tools"
 
 module Quizzer
-  VERSION = '0.0.1'
-  
   DEFAULTS = {:dict_dbfile => "~/.pangea/quizzer/data/dictionary.pstore"}
   
   class Main

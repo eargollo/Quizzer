@@ -13,7 +13,10 @@ At the current release (0.0.1) it is possible to:
 * Add words/meanings through a CSV file
   * File should have word,meaning one per line
   * In order to import execute bin/quizzer -i [FILE]
-* Quizz words/meaning non-stop using RedShoes
+* Quizz words/meaning non-stop using jRuby (STABLE)
+  * Run jQuizzer.bat in windows
+  * Run jQuizzer in linux
+* Quizz words/meaning non-stop using RedShoes (not stable)
   * Run quizzer_red.bat in windows
   * Run shoes lib/quizzer_red.rb in linux
 
@@ -35,6 +38,9 @@ Development has just started. Features to come then:
 
 == REQUIREMENTS:
 
+JRuby version:
+* JRuby
+
 RedShoes version:
 
 * RedShoes
@@ -45,6 +51,10 @@ GreenShoes version (still not working)
 * Ruby Green Shoes gem
 
 == INSTALL:
+
+JRuby version:
+* Download and instal JRuby with Java SDK
+* Don't forget to put JRuby executable at the path
 
 RedShoes version:
 

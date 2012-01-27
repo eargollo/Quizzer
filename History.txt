@@ -1,3 +1,10 @@
+=== 0.0.2 2012-01-27
+
+* First revision working with JRuby (Tagged as JRuby_v_0_1)
+  * Same functionalities as RedShoes version
+  * Quite stable
+  * Very simple at the interface
+
 === 0.0.1 2011-08-22
 
 * First revision working with RedShoes

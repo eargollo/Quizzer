@@ -5,6 +5,9 @@ require 'view'
 require 'view_jruby/quizzer'
 
 module Quizzer
+  VERSION = '0.1'
+  RELEASE = Time.utc(2012,1,27, 16, 14, 0)
+
   module View
     def run
       Quizzer::View::JQuizzer.new
