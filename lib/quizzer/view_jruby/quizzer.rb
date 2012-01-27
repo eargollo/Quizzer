@@ -60,7 +60,6 @@ module Quizzer
         @in_panel.getLayout.setColumns(1)
         question.answers.each_with_index.each do |q, i|
           button = ActionButton.new(q) do
-            puts q
             if question.correct?(i)
               button.setBackground(java.awt.Color::green)
               ask(@@qm.get_question)
