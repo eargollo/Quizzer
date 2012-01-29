@@ -2,7 +2,8 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 require 'view'
-require 'view_jruby/quizzer'
+require 'view_jruby/statistics'
+require 'view_jruby/quizzer_main'
 
 module Quizzer
   VERSION = '0.1'
@@ -10,7 +11,7 @@ module Quizzer
 
   module View
     def run
-      Quizzer::View::JQuizzer.new
+      Quizzer::View::QuizzerMain.new
     end
     
     module_function :run

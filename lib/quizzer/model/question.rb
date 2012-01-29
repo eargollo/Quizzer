@@ -27,12 +27,22 @@ module Quizzer
     class Question
       include Observable
       
-      def initialize(title = nil, options = nil, answer = nil)
+      #Should receive a hash or nothing
+      #Hash options:
+      # title, options(choosable options), correct_id (id of the chosable option that is correct)
+      #Other arguments will be saved as well
+      def initialize(data = nil)
         @data = {}
         @data[:time] = Time.now
-        @data[:title] = title
-        @data[:options] = options
-        @data[:correct_id] = answer
+        if data != nil
+          #VALIDATE
+          raise "Data must be a hash" if !data.is_a?(Hash)
+          [:title, :options, :correct_id].each do |key|
+            raise "Parameter #{key} not found" if data[key] == nil
+          end
+          raise "Parameter option must be an array and it is #{data[:options].class}" if !data[:options].is_a?(Array)
+          @data = data.merge(@data)
+        end
         @data[:finished] = false
         @data[:answered_correct] = nil
         @data[:answers] = []
@@ -59,6 +69,10 @@ module Quizzer
         options
       end
       
+      def get(key)
+        @data[key]
+      end
+      
       def attempts
         @data[:answers]
       end
@@ -73,7 +87,7 @@ module Quizzer
           @data[:answered_correct] = is_correct
         end
         @data[:finished] = @data[:finished] || is_correct
-        @data[:answers] << {:time => Time.now, :answer => id, correct => is_correct}
+        @data[:answers] << {:time => Time.now, :answer => id, :correct => is_correct}
         changed
         #The Question object, if this answer was correct (NOT THE QUESTION CORRECTLY ANSERED)
         # To get if the question was correctly answered call answered_correct? from the object

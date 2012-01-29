@@ -31,7 +31,7 @@ module Quizzer
     import java.awt.BorderLayout
     import javax.swing.JLabel
   
-    class JQuizzer < JFrame
+    class QuizzerMain < JFrame
       
       def initialize
         super("Quizzer")
@@ -47,8 +47,14 @@ module Quizzer
         @label = JLabel.new
         @in_panel = JPanel.new(GridLayout.new)
         @south_label = JLabel.new
+        @bt_stat = ActionButton.new("W") do
+          Statistics.new
+        end
+        south_panel = JPanel.new(BorderLayout.new)
+        south_panel.add(@south_label, BorderLayout::CENTER);
+        south_panel.add(@bt_stat, BorderLayout::LINE_END)
         self.getContentPane.add(@label, BorderLayout::NORTH);
-        self.getContentPane.add(@south_label, BorderLayout::SOUTH);
+        self.getContentPane.add(south_panel, BorderLayout::SOUTH);
         ask(@@qm.get_question)
       end
       

@@ -1,7 +1,11 @@
-=== 0.0.4 2012-01-..
+=== 0.0.4 2012-01-29
 
-* Simplified the whole of database cals
-* Put the words to use the database class (so far not trusting the same db as stats)
+* Improved database code and added statistics of words (tagged as jruby_v_0_3)
+  * Simplified the whole of database cals 
+  * Put the words to use the database class (so far not trusting the same db as stats)
+  * Added reverse questions
+  * Created words statistics and a score (between 0 - 1 ) for ranking
+  * Created an rather ugly button for showing words statistics
 
 === 0.0.3 2012-01-28
 

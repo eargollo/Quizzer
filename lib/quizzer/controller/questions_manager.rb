@@ -50,11 +50,22 @@ module Quizzer
           end
           rows << row
         end
-        rows.each {|wrow| words << @dictionary.retrieve(Model::Word, :row => wrow) } 
+        #Get words
+        rows.each {|wrow| words << @dictionary.retrieve(Model::Word, :row => wrow) }
+        
         answer = rand(words.size)
-        answers = words.map {|w| w.meaning } 
-        #Compose question 
-        q = Model::Question.new(words[answer].word, answers, answer)
+        keys = words.map {|w| w.key}
+        words_text = words.map {|w| w.word} 
+        meanings = words.map {|w| w.meaning }
+        
+        q = nil
+        if rand(2) == 0
+          #Compose straigh question 
+          q = Model::Question.new(:title => words_text[answer], :options => meanings, :correct_id => answer, :keys => keys)
+        else
+          #Compose reverse question
+          q = Model::Question.new(:title => meanings[answer], :options => words_text, :correct_id => answer, :keys => keys)
+        end
         obs = StatisticsManager.get_observer
         if obs.is_a?(Array)
           obs.each { |ob| q.add_observer(ob)}

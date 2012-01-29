@@ -59,12 +59,11 @@ module Quizzer
       end
 
       qm = Controller::QuestionsManager.new(dictionary)
-      Controller::StatisticsManager.set_database(database)
       #Start view
       Quizzer::View.add_controller(:dictionary, dictionary)
       Quizzer::View.add_controller(:manager, qm)
+      Controller::StatisticsManager.set_database(database)
       Quizzer::View.add_controller(:statistics, Controller::StatisticsManager.get_statistics)
-      
       Quizzer::View::run
       
       return 0

@@ -75,25 +75,89 @@ module Quizzer
         end
       end
       
-      def WordsStatistics
+      class WordsStatistics
         def initialize
-          @dictionary = Quizzer::View.get_controller(:dictionary)
-          
+          dictionary = Quizzer::View.get_controller(:dictionary)
+          tb = dictionary.retrieve_all(Model::Word)
+          @words = {}
+          tb.each { |k,w| @words[k] = create_stat}
+        end
+        
+        def create_stat
+          { :score => 0.15, :asked => 0, :right => 0, :wrong => 0, :participated => 0, :part_at_wrong => 0, :wrong_answered => 0 } 
+        end
+        
+        def add(question)
+          #Each right increases in 0.1 until it reaches 1.0
+          #Each asked wrong decreases depending on the attempt up to 50% (50 * attempt / possible attepts)
+          #Clicked wrong in an attempt decreases 0.1 to a minimum of 0
+          #Participated at a wrong and was not chosen 0.001
+          keys = question.get(:keys)
+          answer = question.correct
+          answer_key = keys[answer]
+          keys.each do |k|
+            if @words[k] == nil
+              @words[k] = create_stat
+            end
+            if k == answer_key
+              @words[k][:asked] += 1
+            else
+              @words[k][:participated] += 1
+              if !question.answered_correct?
+                @words[k][:part_at_wrong] += 1
+                @words[k][:score] = (@words[k][:score] + 0.001) > 1 ? 1 : (@words[k][:score] + 0.001)
+              end
+            end
+          end
+          if question.answered_correct?
+            #Correct
+            #Increase score
+            @words[answer_key][:score] = (@words[answer_key][:score] + 0.1) > 1.0 ? 1.0 : (@words[answer_key][:score] + 0.1)
+            @words[answer_key][:right] += 1 
+          else
+            @words[answer_key][:wrong] += 1 
+            #Decrement the asked
+            atpt = question.attempts.size - 1
+            dec = (0.5 * atpt ) / ( question.options.size - 1)
+            @words[answer_key][:score] = @words[answer_key][:score] * (1 - dec)
+            #Increases all answers in 0.001 at begiinging so decrease 0f .101
+            #Decrease of each incorrectly answered
+            question.attempts.each do |attempt|
+              if !attempt[:correct]
+                key = keys[attempt[:answer]]
+                @words[key][:score] = (@words[key][:score] - 0.101) < 0.0 ? 0.0 : (@words[key][:score] - 0.101)
+                @words[key][:wrong_answered] += 1
+              end
+            end
+          end
+        end
+        
+        def get_stats
+          @words
         end
       end
       
-      def initialize(initial_data = nil)
+      def initialize(questions = nil)
         init_stats
-        if initial_data
-          initial_data.values.each do |question|
+        if questions
+          questions.values.each do |question|
             @general.add(question.answered_correct?, question.attempts.size)
+            @words_stats.add(question)
           end
+          
+          #Dump workds stats
+          #words = get_words
+          #sorted = words.to_a.sort {|a,b| b[1][:score] <=> a[1][:score] }
+          #sorted.each_with_index do |w,i|
+          #  puts "#{i+1}) #{w[0]} - Score: #{w[1][:score]} asked/r/w #{w[1][:asked]}/#{w[1][:right]}/#{w[1][:wrong]} Part/P@W/W #{w[1][:participated]}/#{w[1][:part_at_wrong]}/#{w[1][:wrong_answered]}"
+          #end
         end
       end
       
       def init_stats
         @general = SummaryStatistic.new 
-        @session = SummaryStatistic.new 
+        @session = SummaryStatistic.new
+        @words_stats = WordsStatistics.new
       end
       
       def get_general(key = nil)
@@ -106,10 +170,16 @@ module Quizzer
         return @session.get_stats[key]
       end
       
+      def get_words(key = nil)
+        return @words_stats.get_stats if key == nil
+        return @words_stats.get_stats[key]
+      end
+      
       def update(question, guessed_id, attempts, correct, finished)
         if finished
           @general.add(question.answered_correct?, attempts)
           @session.add(question.answered_correct?, attempts)
+          @words_stats.add(question)
 	end 
       end
     end
