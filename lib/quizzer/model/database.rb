@@ -85,8 +85,13 @@ module Quizzer
         return @tables[table_class] != nil ? true : false
       end
       
-      def size
-        return @tables.size
+      def size(table_class)
+        if table_class == nil
+          #Returns the amount of tables
+          return @tables.size  
+        end
+        raise "Table #{table_class} does not exist" if @tables[table_class] == nil
+        return @tables[table_class].size
       end
       
       def retrieve(table_class, options = {})
@@ -94,11 +99,11 @@ module Quizzer
         
         raise "Table does not exist" if @tables[table_class] == nil
         
-        if options[:id]
+        if options[:row]
           #Get the element at a specific position in hash
           element = nil
           @semaphore.synchronize do
-            element = @tables[table_class].values[options[:id]]
+            element = @tables[table_class].values[options[:row]]
           end
           return element
         end
@@ -106,84 +111,55 @@ module Quizzer
         return retdata
       end
       
+      #Instantiates and inserts an object at its table
       def instantiate(table_class, *data)
         ele = table_class.new(*data)
-        ele = self.insert(table_class, ele)
+        ele = self.insert(ele)
         return ele
       end
       
+      #Inserts an object at its class table
       #Options: :duplicate - :ignore, :replace, :fail - default :fail
-      def insert(table_class, data, options ={})
+      def insert(instance, options = {})
+        table_class = instance.class
         options = {:duplicate => :fail}.merge(options)
-        raise "Table does not exist" if @tables[table_class] == nil
-        element = nil
-        if data.is_a?(Hash)
-          element = table_class.new.load(data)
-        else
-          if data.is_a?(Array)
-            insert_batch(table_class, data, options)
-          else
-            if data.is_a?(table_class)
-              element = data
-            else
-              raise "It is not possible to insert data of type #{data.class}"
-            end          
-          end
-        end
+        raise "Table for object class #{table_class} does not exist" if @tables[table_class] == nil
+        #TODO: Check if method dump is declared in the class
         
-        raise "Could not parse data #{data.inspect}" if element == nil
-
         @semaphore.synchronize do
-          if @tables[table_class][element.key] == nil || options[:duplicate] == :replace
+          if @tables[table_class][instance.key] == nil || options[:duplicate] == :replace
             @db.transaction do
-              @db["tables"][table_class][element.key] = element.dump
-              @tables[table_class][element.key] = element
+              @db["tables"][table_class][instance.key] = instance.dump
+              @tables[table_class][instance.key] = instance
             end
           else
             if options[:duplicate] ==:fail 
-              raise "Element #{element} already exists in table #{table_class}" 
+              raise "Element #{instance} already exists in table #{table_class}" 
             end
           end
         end
         
-        return element
+        return instance
       end
       
-      def insert_batch(table_class, data, options = {})
-        options = {:duplicate => :fail}.merge(options)
+      #Instantiates and inserts an object at its table
+      #Options: :duplicate - :ignore, :replace, :fail - default :fail
+      def load_insert(table_class, data, options = {})
+        raise "Table does not exist" if @tables[table_class] == nil
+        element = table_class.new.load(data)
+        return self.insert(element, options)
+      end
+      
+      def load_insert_batch(table_class, data, options = {})
         elements = []
-        data.each do |el|
-          if el.is_a?(Hash)
-            elements << table_class.new.load(el)
-          else
-            if el.is_a?(table_class)
-              elements << el
-            else
-              raise "It is not possible to add data of type #{el.class} to the database table #{table_class}"
-            end
-          end
+        data.each do |single_data|
+          elements << load_insert(table_class, single_data, options)
         end
         
-        @semaphore.synchronize do
-          old_table = @tables[table_class].dup
-          @db.transaction do
-            elements.each do |el|
-              if @db["tables"][table_class][el.key] == nil || options[:duplicate] == :replace
-                @db["tables"][table_class][el.key] = el.dump
-                @table[table_class][el.key] = el
-              else
-                if options[:duplicate] == :fail
-                  @@tables[table_class] = old_table
-                  raise "Element #{el} already exists in table #{table_class}" 
-                end
-              end
-            end
-          end
-        end
         return elements
       end
       
-      def insert_csv(table_class, filename, options = {})
+      def load_insert_csv(table_class, filename, options = {})
         options = {:duplicate => :fail}.merge(options)
         elements = []
         
@@ -195,7 +171,11 @@ module Quizzer
             end
           end
         end
-        insert_batch(elements, options)
+        inserted = []
+        elements.each do |el|
+          inserted << self.insert(el, options)
+        end
+        return inserted
       end
       
       def update_all
@@ -204,14 +184,19 @@ module Quizzer
         end
       end
       
-      def update(table_class, obj)
-        raise "Object is not from class #{table_class}. It is an #{obj.class}"
+      def update(obj)
+        table_class = obj.class
         
-        self.insert(table_class, obj, :duplicate => :replace)
+        self.insert(obj, :duplicate => :replace)
+      end
+      
+      def update_insert(obj)
+        #TODO: Differentiate and fail with update when object does not exist
+        #So far the behavior is the same
+        self.update(obj)
       end
       
       def update_table(table_class)
-
         @semaphore.synchronize do
           @db.transaction do
             @tables[table_class].each do |k, d|
@@ -222,11 +207,9 @@ module Quizzer
       end
     
       def retrieve_all(table_class)
-        data = {}
+        data = nil
         @semaphore.synchronize do
-          @db.transaction do
-            data = @db["tables"][table_class].dup
-          end
+          data = @tables[table_class].dup
         end
         return data
       end

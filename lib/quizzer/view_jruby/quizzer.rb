@@ -35,7 +35,6 @@ module Quizzer
       
       def initialize
         super("Quizzer")
-        @@db = Quizzer::View.get_controller(:dictionary)
         @@qm = Quizzer::View.get_controller(:manager)
         @@st = Quizzer::View.get_controller(:statistics)
         self.initUI

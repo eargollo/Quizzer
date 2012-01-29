@@ -29,7 +29,8 @@ module Quizzer
       TYPES = [:substantive, :verb]
       GENDERS = { "der" => :masculine, "die" => :feminine, "das" => :neutral}
       
-      def initialize(data)
+      def initialize(data = nil)
+	return if data == nil
         if data[:version] != nil
           load(data)
         else
@@ -77,15 +78,37 @@ module Quizzer
       	@data[:type]
       end
       
+      def load_csv(data)
+	raise "Expected a CSV array" if !data.is_a?(Array)
+	raise "Insufficient elements" if data.size < 2
+	dhash = {}
+	dhash[:word] = data.shift
+	dhash[:meaning] = data.shift
+	dhash[:other_csv_fields] = data
+	parse(dhash)
+	return self
+      end
+      
       def load(data)
         raise "Non existent version of word data #{data[:version]}. Actual versions are #{VERSIONS.join(",")}" if !VERSIONS.include?(data[:version])
         raise "Word is required" if data[:word] == nil
         raise "Meaning is required" if data[:meaning] == nil
         @data = data.dup
+        return self
       end
       
       def dump
         @data
+      end
+      
+      def self.validate_csv(data)
+	#Requires at least two fields: Word and Meaning (others will be kept away)
+	if data.is_a?(Array)
+	  if data.size >= 2
+	    return true
+	  end
+	end
+	return false
       end
       
       private

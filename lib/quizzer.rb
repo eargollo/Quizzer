@@ -16,12 +16,20 @@ module Quizzer
       
       options[:dict_dbfile] = File.expand_path(options[:dict_dbfile])
       
-      Main.init(options)
+      #If dictionary file does not exist, creates it
+      if !File.exists?(File.dirname(options[:dict_dbfile]))
+        puts "Creating folder #{options[:dict_dbfile]}"
+        FileUtils.mkdir_p(File.dirname(options[:dict_dbfile]))
+      else
+        dictionary = Model::Database.new(options[:dict_dbfile])
+      end     
       
-      dictionary = Model::Dictionary.new(options[:dict_dbfile])
+      dictionary = Model::Database.new(options[:dict_dbfile])
+      dictionary.create_table(Model::Word) if !dictionary.exists_table?(Model::Word)
+      
       database = Model::Database.new(options[:database_file])
       
-      puts "Dictionary has #{dictionary.size} words"
+      puts "Dictionary has #{dictionary.size(Model::Word)} words"
       
       #If set to import, import file and end execution
       if options[:action] == :import
@@ -35,9 +43,9 @@ module Quizzer
         if !File.exists?(options[:file])
           raise "Could not import file #{file}: File not found"
         end
-        newwords = dictionary.size
-        imported = dictionary.insert_csv(options[:file], :duplicate => options[:duplicate])
-        newwords = dictionary.size - newwords
+        newwords = dictionary.size(Model::Word)
+        imported = dictionary.load_insert_csv(Model::Word, options[:file], :duplicate => options[:duplicate])
+        newwords = dictionary.size(Model::Word) - newwords
         puts "#{imported.size} words parsed and #{newwords} new words added"
         return 0
       end
@@ -62,11 +70,5 @@ module Quizzer
       return 0
     end
     
-    def self.init(options)
-      if !File.exists?(File.dirname(options[:dict_dbfile]))
-        puts "Creating folder #{options[:dict_dbfile]}"
-        FileUtils.mkdir_p(File.dirname(options[:dict_dbfile]))
-      end     
-    end
   end
 end

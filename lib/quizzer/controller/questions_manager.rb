@@ -21,6 +21,7 @@
 #THE SOFTWARE.
 
 require "model/question"
+require "model/word"
 
 module Quizzer
   module Controller
@@ -37,19 +38,19 @@ module Quizzer
       end
 
       def generate_question(options)
-        word_count = @dictionary.size
+        word_count = @dictionary.size(Model::Word)
         words = []
         raise "Dictionary does not have enough words" if word_count < options[:answers]
         
-        ids = []
-        while ids.size < options[:answers]
-          id = rand(word_count)
-          while ids.include?(id)
-            id = (id + 1) % word_count
+        rows = []
+        while rows.size < options[:answers]
+          row = rand(word_count)
+          while rows.include?(row)
+            row = (row + 1) % word_count
           end
-          ids << id
+          rows << row
         end
-        ids.each {|idw| words << @dictionary.retrieve(:id => idw) } 
+        rows.each {|wrow| words << @dictionary.retrieve(Model::Word, :row => wrow) } 
         answer = rand(words.size)
         answers = words.map {|w| w.meaning } 
         #Compose question 
@@ -64,9 +65,6 @@ module Quizzer
         return q
       end
       
-      def update *a
-        puts "self"
-      end
     end
   end
 end

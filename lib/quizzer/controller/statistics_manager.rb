@@ -40,7 +40,7 @@ module Quizzer
 
       def self.update(question, guessed_id, attempts, correct, finished)
         if finished
-          @@db.insert(Model::Question, question, :duplicate => :replace)
+          @@db.update_insert(question)
         end
       end
       
@@ -75,11 +75,18 @@ module Quizzer
         end
       end
       
+      def WordsStatistics
+        def initialize
+          @dictionary = Quizzer::View.get_controller(:dictionary)
+          
+        end
+      end
+      
       def initialize(initial_data = nil)
         init_stats
         if initial_data
-          initial_data.values.each do |data|
-            @general.add(data[:answered_correct], data[:answers].size)
+          initial_data.values.each do |question|
+            @general.add(question.answered_correct?, question.attempts.size)
           end
         end
       end

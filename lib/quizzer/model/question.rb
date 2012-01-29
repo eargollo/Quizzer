@@ -59,6 +59,10 @@ module Quizzer
         options
       end
       
+      def attempts
+        @data[:answers]
+      end
+      
       def size
         @data[:options].size
       end

@@ -1,3 +1,8 @@
+=== 0.0.4 2012-01-..
+
+* Simplified the whole of database cals
+* Put the words to use the database class (so far not trusting the same db as stats)
+
 === 0.0.3 2012-01-28
 
 * Very functional, does the basic deal and with the logging, it gives the base
