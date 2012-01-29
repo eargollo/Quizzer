@@ -20,7 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
-require "controller/question"
+require "model/question"
 
 module Quizzer
   module Controller
@@ -39,22 +39,33 @@ module Quizzer
       def generate_question(options)
         word_count = @dictionary.size
         words = []
-        attempts = options[:answers] * 100
         raise "Dictionary does not have enough words" if word_count < options[:answers]
-        while words.size < options[:answers]
-          word = @dictionary.retrieve(:id => rand(word_count)) 
-
-          #Check if word or meaning are duplicated
-          #TODO: Check if word or meaning are duplicated
-          
-          #Add word to list
-          words << word
+        
+        ids = []
+        while ids.size < options[:answers]
+          id = rand(word_count)
+          while ids.include?(id)
+            id = (id + 1) % word_count
+          end
+          ids << id
         end
+        ids.each {|idw| words << @dictionary.retrieve(:id => idw) } 
         answer = rand(words.size)
-        answers = words.map {|word| word.meaning} 
+        answers = words.map {|w| w.meaning } 
         #Compose question 
-        q = Question.new(words[answer].word, answers, answer)
+        q = Model::Question.new(words[answer].word, answers, answer)
+        obs = StatisticsManager.get_observer
+        if obs.is_a?(Array)
+          obs.each { |ob| q.add_observer(ob)}
+        else
+          q.add_observer obs  
+        end
+        
         return q
+      end
+      
+      def update *a
+        puts "self"
       end
     end
   end

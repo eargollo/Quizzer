@@ -20,20 +20,27 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
+require 'observer'
+
 module Quizzer
-  module Controller
+  module Model
     class Question
-      def initialize(question, options, answer)
-        @question = question
-        @options = options   
-        @answer = answer
-        @listeners = []
-        @attempt = 0
+      include Observable
+      
+      def initialize(title = nil, options = nil, answer = nil)
+        @data = {}
+        @data[:time] = Time.now
+        @data[:title] = title
+        @data[:options] = options
+        @data[:correct_id] = answer
+        @data[:finished] = false
+        @data[:answered_correct] = nil
+        @data[:answers] = []
       end
       
       def option(id=nil)
-        id = @answer if id == nil
-        return @options[id]
+        id = @data[:correct_id] if id == nil
+        return @data[:options][id]
       end
       
       def question
@@ -41,11 +48,11 @@ module Quizzer
       end
       
       def title
-        return @question
+        return @data[:title]
       end
       
       def options
-        return @options
+        return @data[:options]
       end
       
       def answers
@@ -53,17 +60,29 @@ module Quizzer
       end
       
       def size
-        @options.size
+        @data[:options].size
       end
       
       def correct?(id)
-        @attempt = @attempt + 1
-        @listeners.each {|al| al.answer_trigger(self, id, @attempt, id == @answer)}
-        return id == @answer
+        is_correct = (id == @data[:correct_id])
+        if @data[:answered_correct] == nil
+          @data[:answered_correct] = is_correct
+        end
+        @data[:finished] = @data[:finished] || is_correct
+        @data[:answers] << {:time => Time.now, :answer => id, correct => is_correct}
+        changed
+        #The Question object, if this answer was correct (NOT THE QUESTION CORRECTLY ANSERED)
+        # To get if the question was correctly answered call answered_correct? from the object
+        notify_observers(self, id, @data[:answers].size, is_correct, @data[:finished])
+        return is_correct
+      end
+      
+      def answered_correct?
+        @data[:answered_correct]
       end
       
       def correct
-        return @answer
+        return @data[:correct_id]
       end
       
       def to_s
@@ -74,9 +93,20 @@ module Quizzer
         return st
       end
       
-      def add_listener(listener)
-        @listeners << listener
-      end    
+      def key
+        return @data[:time]
+      end
+      
+      def load(data)
+        #TODO: Should do all the checking
+        @data = data
+        return self
+      end
+      
+      def dump
+        @data
+      end
+      
     end
   end
 end

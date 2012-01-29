@@ -31,8 +31,9 @@ module Quizzer
     class Dictionary
       def initialize(dbfile)
         @semaphore = Mutex.new
-        if !File.exists?(File.dirname(dbfile))
-          raise "Path #{File.expand_path(File.dirname(dbfile))} does not exist."
+        dbfile = File.expand_path(dbfile)
+        if !File.directory?(File.dirname(dbfile))
+          raise "Path #{File.dirname(dbfile)} does not exist."
         end
         
         first_time = !File.exists?(dbfile)
@@ -155,6 +156,14 @@ module Quizzer
           end
         end
         insert_batch(words, options)
+      end
+      
+      def dump
+        @semaphore.synchronize do
+          @db.transaction do
+            puts @db.inspect
+          end
+        end
       end
     end
   end

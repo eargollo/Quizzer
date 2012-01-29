@@ -1,3 +1,14 @@
+=== 0.0.3 2012-01-28
+
+* Very functional, does the basic deal and with the logging, it gives the base
+  for a statistics based approach (statistics can be built without loss of
+  the effort) (General tagged with Quizzer_0_0_3 and cleaned as JRuby_v_0_2)
+  * Logging all the questions and answers for statistics
+  * Providing some basic statistics
+    * General basic statistics
+    * Session basic statistics
+  * Solved bug of having a question with duplicated answers
+
 === 0.0.2 2012-01-27
 
 * First revision working with JRuby (Tagged as JRuby_v_0_1)

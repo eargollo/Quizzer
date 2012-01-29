@@ -6,7 +6,8 @@ require "quizzer/model"
 require "quizzer/tools"
 
 module Quizzer
-  DEFAULTS = {:dict_dbfile => "~/.pangea/quizzer/data/dictionary.pstore"}
+  DEFAULTS = {:dict_dbfile   => "~/.pangea/quizzer/data/dictionary.pstore",
+              :database_file => "~/.pangea/quizzer/data/database.pstore"}
   
   class Main
     def self.run(argv, env, configuration)
@@ -15,11 +16,10 @@ module Quizzer
       
       options[:dict_dbfile] = File.expand_path(options[:dict_dbfile])
       
-      if !File.exists?(File.dirname(options[:dict_dbfile]))
-        Main.init(options)
-      end
+      Main.init(options)
       
       dictionary = Model::Dictionary.new(options[:dict_dbfile])
+      database = Model::Database.new(options[:database_file])
       
       puts "Dictionary has #{dictionary.size} words"
       
@@ -41,11 +41,21 @@ module Quizzer
         puts "#{imported.size} words parsed and #{newwords} new words added"
         return 0
       end
+      
+      if options[:action] == :dump
+        dictionary.dump
+        puts
+        
+        database.dump
+        return 0
+      end
 
       qm = Controller::QuestionsManager.new(dictionary)
+      Controller::StatisticsManager.set_database(database)
       #Start view
       Quizzer::View.add_controller(:dictionary, dictionary)
       Quizzer::View.add_controller(:manager, qm)
+      Quizzer::View.add_controller(:statistics, Controller::StatisticsManager.get_statistics)
       
       Quizzer::View::run
       
@@ -53,8 +63,10 @@ module Quizzer
     end
     
     def self.init(options)
-      puts "Creating folder #{options[:dict_dbfile]}"
-      FileUtils.mkdir_p(File.dirname(options[:dict_dbfile]))
+      if !File.exists?(File.dirname(options[:dict_dbfile]))
+        puts "Creating folder #{options[:dict_dbfile]}"
+        FileUtils.mkdir_p(File.dirname(options[:dict_dbfile]))
+      end     
     end
   end
 end

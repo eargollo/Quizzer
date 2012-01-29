@@ -7,12 +7,10 @@ module Quizzer
     @@controllers = {}
     
     def add_controller(type, obj)
-      puts "Adding controller #{type}"
       @@controllers[type] = obj
     end
 
     def get_controller(type)
-      puts "Getting controller #{type}"
       @@controllers[type]
     end
     

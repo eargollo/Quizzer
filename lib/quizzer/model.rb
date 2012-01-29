@@ -3,6 +3,8 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 require 'model/word'
 require 'model/dictionary'
+require 'model/database'
+require 'model/question'
 
 module Quizzer
   module Model

@@ -37,7 +37,7 @@ module Quizzer
         super("Quizzer")
         @@db = Quizzer::View.get_controller(:dictionary)
         @@qm = Quizzer::View.get_controller(:manager)
-        self.initStats
+        @@st = Quizzer::View.get_controller(:statistics)
         self.initUI
       end
     
@@ -53,15 +53,13 @@ module Quizzer
         ask(@@qm.get_question)
       end
       
-      def initStats
-        @stats = { :error_attempt => []}
-        [:questions, :correct, :error].each do |t|
-          @stats[t] = 0
-        end
-      end
-      
       def statsText
-        "Correct answered #{@stats[:correct]}/#{@stats[:questions]} Attempt map #{@stats[:error_attempt].join('/')}"
+        stat = @@st.get_session
+        perc = stat[:questions] == 0 ? nil : (100 * stat[:correct])/stat[:questions]
+        st = "<html>Session: Correct answered #{stat[:correct]}/#{stat[:questions]} (#{perc} %) Attempt map #{stat[:error_attempt].join('/')}"
+        stat = @@st.get_general
+        perc = stat[:questions] == 0 ? nil : (100 * stat[:correct])/stat[:questions]
+        st += "<br>General: Correct answered #{stat[:correct]}/#{stat[:questions]} (#{perc} %) Attempt map #{stat[:error_attempt].join('/')}</html>"
       end
       
       def ask(question)
@@ -76,17 +74,10 @@ module Quizzer
         @in_panel.getLayout.setColumns(1)
         question.answers.each_with_index.each do |q, i|
           button = ActionButton.new(q) do
-            @stats[:questions] += 1 if attempt == 0
-            
             if question.correct?(i)
-              @stats[:correct] += 1 if attempt == 0 
               button.setBackground(java.awt.Color::green)
               ask(@@qm.get_question)
             else
-              @stats[:error] += 1 if attempt == 0
-              @stats[:error_attempt][attempt] = 0 if @stats[:error_attempt][attempt] == nil
-              @stats[:error_attempt][attempt] += 1
-              attempt += 1
               button.setBackground(java.awt.Color::red)
             end
             button.setEnabled(false)

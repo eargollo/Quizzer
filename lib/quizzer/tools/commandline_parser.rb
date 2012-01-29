@@ -37,6 +37,10 @@ module Quizzer
             options[:file] = file
           end
           
+          parser.on("--dump", "Dump data") do
+            options[:action] = :dump
+           end
+          
           parser.on("-v", "--version", "Show release") do
             puts "Quizzer version #{Quizzer::VERSION} released at #{Quizzer::RELEASE}"
             exit(0)
