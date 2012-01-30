@@ -48,19 +48,28 @@ module Quizzer
       def initialize
         super("Statistics")
         @@st = Quizzer::View.get_controller(:statistics)
-        self.initUI
+        @word_database = Quizzer::View.get_controller(:dictionary)
+        self.init_ui
       end
     
-      def initUI
+      def init_ui
         self.setSize(800,600)
         #self.setDefaultCloseOperation(JFrame::EXIT_ON_CLOSE)
         
         words = @@st.get_words
-        columns = ["Rank", "Word", "Score", "Asked", "Right", "Wrong", "Part", "Part at Wrong", "Sel Wrong"]
+        columns = ["Rank", "Word", "Meaning", "Score", "Asked", "Right", "Wrong", "Part", "Part at Wrong", "Sel Wrong"]
         sorted = words.to_a.sort {|a,b| b[1][:score] <=> a[1][:score] }
         data = []
         sorted.each_with_index do |w,i|
-          data << [i+1, w[0], ((w[1][:score]*10000).round)/100.0, w[1][:asked], w[1][:right], w[1][:wrong], w[1][:participated], w[1][:part_at_wrong], w[1][:wrong_answered] ]
+          word = @word_database.retrieve(Model::Word, :key => w[0])
+          word_text = meaning = nil
+          if word != nil
+            word_text = word.word
+            meaning = word.meaning
+          else
+            word_text = w[0]
+          end
+          data << [i+1, word_text, meaning, ((w[1][:score]*10000).round)/100.0, w[1][:asked], w[1][:right], w[1][:wrong], w[1][:participated], w[1][:part_at_wrong], w[1][:wrong_answered] ]
         end
         tm = javax.swing.table.DefaultTableModel.new
 

@@ -107,8 +107,11 @@ module Quizzer
           end
           return element
         end
-        #TODO: Get by filter
-        return retdata
+        if options[:key]
+          return @tables[table_class][options[:key]]
+        end
+        
+        return nil
       end
       
       #Instantiates and inserts an object at its table
