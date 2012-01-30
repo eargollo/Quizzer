@@ -11,6 +11,7 @@ module Quizzer
 
   module View
     def run
+      #Quizzer::View::Systray.new
       Quizzer::View::QuizzerMain.new
     end
     

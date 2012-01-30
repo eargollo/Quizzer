@@ -3,6 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 require 'controller/questions_manager'
 require 'controller/statistics_manager'
+require 'controller/configuration_manager'
   
 module Quizzer
   module Controller

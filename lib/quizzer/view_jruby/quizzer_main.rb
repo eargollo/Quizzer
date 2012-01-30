@@ -30,6 +30,8 @@ module Quizzer
     import java.awt.GridLayout
     import java.awt.BorderLayout
     import javax.swing.JLabel
+    import java.awt.TrayIcon
+    import java.awt.Toolkit
   
     class QuizzerMain < JFrame
       
@@ -37,11 +39,13 @@ module Quizzer
         super("Quizzer")
         @@qm = Quizzer::View.get_controller(:manager)
         @@st = Quizzer::View.get_controller(:statistics)
-        self.initUI
+        @cm = Quizzer::View.get_controller(:configuration)
+        self.add_system_tray
+        self.init_ui
       end
     
-      def initUI
-        self.setSize(400,300)
+      def init_ui
+        self.setSize(450,300)
         self.setDefaultCloseOperation(JFrame::EXIT_ON_CLOSE)
         
         @label = JLabel.new
@@ -55,7 +59,8 @@ module Quizzer
         south_panel.add(@bt_stat, BorderLayout::LINE_END)
         self.getContentPane.add(@label, BorderLayout::NORTH);
         self.getContentPane.add(south_panel, BorderLayout::SOUTH);
-        ask(@@qm.get_question)
+        self.ask(@@qm.get_question)
+        self.setVisible(true)
       end
       
       def statsText
@@ -82,6 +87,14 @@ module Quizzer
             if question.correct?(i)
               button.setBackground(java.awt.Color::green)
               ask(@@qm.get_question)
+              #@cm.wait_next_period(self)
+              if @cm.get_period > 0
+                Thread.new do 
+                  self.setVisible(false)
+                  @cm.wait_next_period
+                  self.setVisible(true)
+                end
+              end
             else
               button.setBackground(java.awt.Color::red)
             end
@@ -91,7 +104,65 @@ module Quizzer
         end
         
         self.getContentPane.add(@in_panel, BorderLayout::CENTER);
-        self.setVisible(true);
+        
+        #period = @cm.get_period
+        #if period > 0
+        #  self.setVisible(false);
+        #  #@cm.wait_next_period
+        #  sleep(period)
+        #end
+        #self.setVisible(true);
+        
+      end
+      
+      TIMES = [ { :name => "Continuous quiz", :time => 0 },
+              { :name => "Quiz every 5 seconds", :time => 5 },
+              { :name => "Quiz every 5 minutes", :time => 300 },
+              { :name => "Quiz every 10 minutes", :time => 600 },
+              { :name => "Quiz every 15 minutes", :time => 900 },
+      ]
+      
+      def add_system_tray
+        @configuration = View.get_controller(:configuration)
+        
+        # Setup menu items
+        menu_items = []
+
+        mitem = java.awt.MenuItem.new("Quiz NOW!")
+        mitem.add_action_listener { @configuration.interrupt_period }
+        #TODO: Set the about window start as action listener here
+        menu_items << mitem
+        
+        TIMES.each do |it|
+          mitem = java.awt.MenuItem.new(it[:name])
+          mitem.add_action_listener { @configuration.set_period(it[:time]) }
+          menu_items << mitem
+        end
+        mitem = java.awt.MenuItem.new("About")
+        #TODO: Set the about window start as action listener here
+        menu_items << mitem
+
+        mitem = java.awt.MenuItem.new("Exit")
+        mitem.add_action_listener { java.lang.System::exit(0)}
+        menu_items << mitem
+        
+        #Create popup menu
+        popup = java.awt.PopupMenu.new
+        # Add the items to the popup menu itself
+        menu_items.each do |mi|
+          popup.add(mi)
+        end
+        
+        # Give the tray an icon and attach the popup menu to it
+        path = File.expand_path(File.dirname(__FILE__))
+        image_path = "#{path}/images/systray.gif"
+        image = java.awt.Toolkit::default_toolkit.get_image(image_path)
+        tray_icon = TrayIcon.new(image, "Quizzer!", popup)
+        tray_icon.image_auto_size = true
+        
+        # Finally add the tray icon to the tray
+        tray = java.awt.SystemTray::system_tray
+        tray.add(tray_icon)
       end
     end  
   end
