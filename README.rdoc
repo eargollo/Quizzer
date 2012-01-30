@@ -8,7 +8,7 @@ A simple language quiz application
 
 == FEATURES/PROBLEMS:
 
-At the current release (0.0.1) it is possible to:
+The JRuby version is the most advanced one and enables:
 
 * Add words/meanings through a CSV file
   * File should have word,meaning one per line
@@ -16,30 +16,30 @@ At the current release (0.0.1) it is possible to:
 * Quizz words/meaning non-stop using jRuby (STABLE)
   * Run jQuizzer.bat in windows
   * Run jQuizzer in linux
-* Quizz words/meaning non-stop using RedShoes (not stable)
-  * Run quizzer_red.bat in windows
-  * Run shoes lib/quizzer_red.rb in linux
+* View words learning statistics
+  * A score is calculated from all the answers. The socore goes from 0 to 100
+    showing how known a word is (0 - not known at all and 100 - Very known)
+  * Score is dynamically updated in a way that even a known word can go down on
+    mistakes. It takes into account also words wrongly choosed as an answer
 
 Development has just started. Features to come then:
 
 * Quizz from meaning to several words
-* Check for duplicated answer
 * Work with GreenShoes
 * Quiz periodically for word/meaning (go to tray)
-* Record statistics and avoid well known words
+* Avoid well known words based on words scoring
 
 == SYNOPSIS:
 
-  Quizzer is supposed to become a program to help 
-  learning languages through a periodic quiz for
-  vocabulary. It will record statistics so that 
-  the user knows the words that are memorized and
-  the ones he fails the most.
+  Quizzer is a program to help learning languages
+  through a periodic quiz for vocabulary. It records
+  statistics so that the user knows the words that
+  are memorized and the ones he fails the most.
 
 == REQUIREMENTS:
 
-JRuby version:
-* JRuby
+JRuby version (the most advanced and stable one):
+* JRuby (http://jruby.org/): Download and install the exe+jre version
 
 RedShoes version:
 
@@ -53,8 +53,19 @@ GreenShoes version (still not working)
 == INSTALL:
 
 JRuby version:
-* Download and instal JRuby with Java SDK
+* Download and instal JRuby with Java SDK (exe+jre) from http://jruby.org/
 * Don't forget to put JRuby executable at the path
+* Download the project from GitHub at https://github.com/eargollo/Quizzer/zipball/jruby_v_0_3
+* Unzip at the folder you prefer
+* Import words running from command line:
+  [YOUR_FOLDER]\bin\jQuizzer -i [CSV FILE]
+  * The csv file should have lines with word, meaning
+  * Example: For someone learning Portugueses the file could be:
+amigo, friend
+casa, house
+jogo, game
+
+* Run the quizzer and have fun: Just double click on [YOUR FOLDER]\bin\jQuizzer 
 
 RedShoes version:
 
