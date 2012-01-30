@@ -18,31 +18,15 @@ module Quizzer
         @period = period
       end
       
-      def wait_next_period #(obj)
-        #@target = obj
-        #if @period > 0
-        #  @thread = Thread.new do
-        #    obj.setVisible(false)
-        #    sleep(@period)
-        #    obj.setVisible(true)
-        #  end
-        #end
-
-
+      def wait_next_period
         @thread = Thread.new { sleep(@period) }
-        puts "Waiting for thread to finish sleeping..."
         @thread.join
-        puts "Joinned thread ... releasing"
         @thread = nil
       end
       
       def interrupt_period
         if @thread != nil && @thread.alive?
-          puts "Killing thread"
           Thread.kill(@thread)
-        #  if @target != nil
-        #    @target.setVisible(true)
-        #  end
         end
       end
     end

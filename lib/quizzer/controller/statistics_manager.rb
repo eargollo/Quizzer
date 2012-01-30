@@ -84,12 +84,13 @@ module Quizzer
         end
         
         def create_stat
-          { :score => 0.15, :asked => 0, :right => 0, :wrong => 0, :participated => 0, :part_at_wrong => 0, :wrong_answered => 0 } 
+          { :score => 0.15, :raw_score => 0, :asked => 0, :right => 0, :wrong => 0, :participated => 0, :part_at_wrong => 0, :wrong_answered => 0 } 
         end
         
         def add(question)
           #Each right increases in 0.1 until it reaches 1.0
           #Each asked wrong decreases depending on the attempt up to 50% (50 * attempt / possible attepts)
+          #  and an adittional 0.1 decrease
           #Clicked wrong in an attempt decreases 0.1 to a minimum of 0
           #Participated at a wrong and was not chosen 0.001
           keys = question.get(:keys)
@@ -106,6 +107,7 @@ module Quizzer
               if !question.answered_correct?
                 @words[k][:part_at_wrong] += 1
                 @words[k][:score] = (@words[k][:score] + 0.001) > 1 ? 1 : (@words[k][:score] + 0.001)
+                @words[k][:raw_score] = @words[k][:raw_score] + 0.001
               end
             end
           end
@@ -113,6 +115,7 @@ module Quizzer
             #Correct
             #Increase score
             @words[answer_key][:score] = (@words[answer_key][:score] + 0.1) > 1.0 ? 1.0 : (@words[answer_key][:score] + 0.1)
+            @words[answer_key][:raw_score] = @words[answer_key][:raw_score] + 0.1
             @words[answer_key][:right] += 1 
           else
             @words[answer_key][:wrong] += 1 
@@ -120,12 +123,16 @@ module Quizzer
             atpt = question.attempts.size - 1
             dec = (0.5 * atpt ) / ( question.options.size - 1)
             @words[answer_key][:score] = @words[answer_key][:score] * (1 - dec)
+            @words[answer_key][:raw_score] = (@words[answer_key][:raw_score] > 0) ? (@words[answer_key][:score] * (1 - dec)) : (@words[answer_key][:score] * (1 + dec))
+            @words[answer_key][:score] = (@words[answer_key][:score] - 0.1) < 0.0 ? 0.0 : (@words[answer_key][:score] - 0.1)
+            @words[answer_key][:raw_score] = @words[answer_key][:raw_score] - 0.1
             #Increases all answers in 0.001 at begiinging so decrease 0f .101
             #Decrease of each incorrectly answered
             question.attempts.each do |attempt|
               if !attempt[:correct]
                 key = keys[attempt[:answer]]
                 @words[key][:score] = (@words[key][:score] - 0.101) < 0.0 ? 0.0 : (@words[key][:score] - 0.101)
+                @words[key][:raw_score] = @words[key][:raw_score] - 0.101
                 @words[key][:wrong_answered] += 1
               end
             end
