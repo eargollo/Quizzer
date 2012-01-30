@@ -121,6 +121,7 @@ module Quizzer
           @data = {}
           @data[:version] = VERSION
           @data[:original] = data.dup
+          @data[:time] = Time.now
           parts = data[:word].split(" ")
           possible_article = parts[0].strip.downcase
           if GENDERS.keys.include?(possible_article)

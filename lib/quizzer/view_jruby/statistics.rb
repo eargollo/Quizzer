@@ -26,24 +26,9 @@ include Java
 module Quizzer
   module View
     import javax.swing.JFrame
-#    import javax.swing.JPanel
-#    import java.awt.GridLayout
-#    import java.awt.BorderLayout
     import javax.swing.JTable
   
     class Statistics < JFrame
-      
-      class WordsDataModel
-        def getColumnCount
-          return 10
-        end
-        def getRowCount
-          return 10
-        end
-        def getValueAt(row,col)
-          return row*col
-        end
-      end
       
       def initialize
         super("Statistics")

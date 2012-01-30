@@ -1,3 +1,7 @@
+=== 0.0.6
+
+* Add to word the date they were inserted
+
 === 0.0.5 2012-01-30
 
 * Enables system tray and periodic quiz (tagged as jruby_v_0_4)
@@ -49,3 +53,18 @@ TODO List (possible features to add in the future):
 * Take very known words out of the quiz
   * The one that reaches a score of 100 stop quizzing for one week? Or an amount of sessions?
   * The ones with raw_score over 2 stop appearing at answers and reduce probability at questions?
+  * IDEA: Every word has 110 - score points to appear - randomly select based on that
+* Work on packaging the application
+  * Create a jar file
+  * Installer
+* Interface
+  * Choose icon for application (put it at system tray)
+NOW  * Check hoover label
+  * Check borders
+* Words
+OK  * Add date words were inserted
+  * Add the concept of tags (hard and long task)
+    * Create tag
+    * Import from CSV
+  * Add the possibility of getting the word function (verb, adj, sbs) also from CSV
+  
