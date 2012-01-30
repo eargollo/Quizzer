@@ -6,7 +6,6 @@ clean_list = [
   "lib/quizzer/view_red_shoes",
   "lib/quizzer/view_green_shoes.rb",
   "lib/quizzer/view_red_shoes.rb",
-  "lib/quizzer_jruby.rb",
   "lib/quizzer_green.rb",
   "lib/quizzer_red.rb",
   "tmp",
@@ -22,6 +21,16 @@ require "fileutils"
 base_path = File.expand_path(File.dirname(__FILE__) + "/..")
 
 puts base_path
+
+error = false
+clean_list.each do |file|
+  extended_name = "#{base_path}/#{file}"
+  if !File.exists?(extended_name)
+    puts "File #{extended_name} does not exist"
+    error = true
+  end
+end
+raise "Errors found " if error
 
 clean_list.each do |file|
   extended_name = "#{base_path}/#{file}"
