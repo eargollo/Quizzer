@@ -8,7 +8,6 @@ require "quizzer/tools"
 module Quizzer
   DEFAULTS = {:dict_dbfile   => "~/.pangea/quizzer/data/dictionary.pstore",
               :database_file => "~/.pangea/quizzer/data/database.pstore" ,
-              :configuration => { :period => 0 }
               }
   
   class Main
@@ -66,7 +65,7 @@ module Quizzer
       Quizzer::View.add_controller(:manager, qm)
       Controller::StatisticsManager.set_database(database)
       Quizzer::View.add_controller(:statistics, Controller::StatisticsManager.get_statistics)
-      Quizzer::View.add_controller(:configuration, Controller::ConfigurationManager.new(DEFAULTS[:configuration]))
+      Quizzer::View.add_controller(:configuration, Controller::ConfigurationManager.new(dictionary, 0))
       Quizzer::View::run
       
       return 0

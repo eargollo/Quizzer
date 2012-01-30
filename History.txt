@@ -1,3 +1,11 @@
+=== 0.0.5 2012-01-30
+
+* Enables system tray and periodic quiz (tagged as jruby_v_0_4)
+  * Added system tray icon and possibility of quizing periodically
+  * Added new statistic of 'pure score'
+  * Added definition of words to statistic grid
+  * Save configuration so that each time it runs, runs with previous settings
+
 === 0.0.4 2012-01-29
 
 * Improved database code and added statistics of words (tagged as jruby_v_0_3)
@@ -34,3 +42,10 @@
   * It is not very stable in Windows (I believe it is a shoes problem)
   * Added the basis for using it within GreeShoes
   * NO statistics
+  
+TODO List (possible features to add in the future):
+* Add statistics on longest quiz without mistakes
+* Add pointing system (every right question gives 10 points, every wrong answer takes out a certain amount)
+* Take very known words out of the quiz
+  * The one that reaches a score of 100 stop quizzing for one week? Or an amount of sessions?
+  * The ones with raw_score over 2 stop appearing at answers and reduce probability at questions?

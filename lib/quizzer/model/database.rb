@@ -21,7 +21,7 @@
 #THE SOFTWARE.
 
 #In order to be stored at the database a class must have
-#1) A method called key that should return the instance uniqui primary key
+#1) A method called key that should return the instance unique primary key
 #2) A method load that pushes data into an instance. This method MUST return SELF
 #3) new should not receive parameters or parameters should have default initialization 
 #3) If it is to be instantiated as a csv, a method validate_csv (to be changed for cathing exceptions)

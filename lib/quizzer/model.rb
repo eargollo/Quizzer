@@ -4,6 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'model/word'
 require 'model/database'
 require 'model/question'
+require 'model/configuration'
 
 module Quizzer
   module Model
