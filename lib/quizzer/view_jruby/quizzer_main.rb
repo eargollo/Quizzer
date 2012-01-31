@@ -22,6 +22,7 @@
 
 include Java
 require 'view_jruby/action_button'
+require 'view_jruby/pretty_button'
 
 module Quizzer
   module View
@@ -32,6 +33,7 @@ module Quizzer
     import javax.swing.JLabel
     import java.awt.TrayIcon
     import java.awt.Toolkit
+    import java.awt.Color
   
     class QuizzerMain < JFrame
       
@@ -46,10 +48,18 @@ module Quizzer
     
       def init_ui
         self.setSize(450,300)
+        self.getContentPane.setBackground(Color::BLACK)
         self.setDefaultCloseOperation(JFrame::EXIT_ON_CLOSE)
         
         @label = JLabel.new
+        bkcolor = Color.new(rand * 0.5 + 0.25, rand * 0.5 + 0.25, rand * 0.5 + 0.25)
+        
+        #Label
+        #@label = PrettyButton.new(bkcolor, bkcolor, "", 4)
+        #@label.setEnabled(false)
+        
         @in_panel = JPanel.new(GridLayout.new)
+        @in_panel.setBackground(Color.new(0,0,0,1.0))
         @south_label = JLabel.new
         @bt_stat = ActionButton.new("W") do
           Statistics.new
@@ -77,13 +87,22 @@ module Quizzer
         
         #Set Question title
         @label.setText(question.title)
+        @label.setForeground(Color::WHITE)
+        @label.setBorder(javax.swing.border.EmptyBorder.new(10,10,10,10))
         @south_label.setText(self.statsText)
         
         @in_panel.removeAll
         @in_panel.getLayout.setRows(question.answers.size)
         @in_panel.getLayout.setColumns(1)
+        r = rand * 0.3 + 0.4
+        g = rand * 0.3 + 0.4
+        b = rand * 0.3 + 0.4
         question.answers.each_with_index.each do |q, i|
-          button = ActionButton.new(q) do
+          #button = ActionButton.new(q) do
+          cl = Color.new(r,g,b)
+          hv = Color.new((2+r)/3,(2+g)/3,(2+b)/3) 
+          #hv = Color.new(1.0,1.0,1.0,0.5) #Color.new(i/10.0,1.0, i/10.0)
+          button = PrettyButton.new(cl, hv, q, 4) do
             if question.correct?(i)
               button.setBackground(java.awt.Color::green)
               ask(@@qm.get_question)
@@ -100,6 +119,7 @@ module Quizzer
             end
             button.setEnabled(false)
           end
+          button.setHorizontalAlignment(JLabel::CENTER)
           @in_panel.add button
         end
         
