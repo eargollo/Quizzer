@@ -13,7 +13,7 @@ class HoverActionLabel < JLabel
     super(*arg)
     @action = blk
     @color = color
-    @hover = color
+    @hover = hover
     self.setBackground(@color)
     self.setOpaque(true)
     self.enableEvents(java.awt.AWTEvent::MOUSE_EVENT_MASK)
@@ -58,12 +58,19 @@ class HTest < JFrame
   def init_ui
     self.setSize(450,300)
     self.setDefaultCloseOperation(JFrame::EXIT_ON_CLOSE)
-
     
     in_panel = JPanel.new(GridLayout.new(5,1))
+    in_panel.setBorder(javax.swing.border.EmptyBorder.new(10,10,10,10))
     (1..5).each do |lid|
+      round_panel = JPanel.new(GridLayout.new(1,0))
+      round_panel.setBorder(javax.swing.border.EmptyBorder.new(5,5,5,5))
       lb = HoverActionLabel.new(Color.new(1.0,lid/10.0,lid/10.0), Color.new(lid/10.0,1.0, lid/10.0),"I am the option #{lid}")
-      in_panel.add(lb)
+      lb.setHorizontalAlignment(JLabel::CENTER)
+      #  setVerticalTextPosition(JLabel::TOP)#CENTER);
+      #lb.setHorizontalTextPosition(javax.swing.SwingConstants::RIGHT) #JLabel::CENTER);
+      #lb.setBorder(javax.swing.border.EmptyBorder.new(10,10,10,10))
+      round_panel.add(lb)
+      in_panel.add(round_panel)
     end
     
     self.getContentPane.add(in_panel);
