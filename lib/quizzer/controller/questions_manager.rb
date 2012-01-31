@@ -37,21 +37,69 @@ module Quizzer
         return generate_question(qoptions)
       end
 
+      #def generate_question(options)
+      #  word_count = @dictionary.size(Model::Word)
+      #  words = []
+      #  raise "Dictionary does not have enough words" if word_count < options[:answers]
+      #  
+      #  rows = []
+      #  while rows.size < options[:answers]
+      #    row = rand(word_count)
+      #    while rows.include?(row)
+      #      row = (row + 1) % word_count
+      #    end
+      #    rows << row
+      #  end
+      #  #Get words
+      #  rows.each {|wrow| words << @dictionary.retrieve(Model::Word, :row => wrow) }
+      #  
+      #  answer = rand(words.size)
+      #  keys = words.map {|w| w.key}
+      #  words_text = words.map {|w| w.word} 
+      #  meanings = words.map {|w| w.meaning }
+      #  
+      #  q = nil
+      #  if rand(2) == 0
+      #    #Compose straigh question 
+      #    q = Model::Question.new(:title => words_text[answer], :options => meanings, :correct_id => answer, :keys => keys)
+      #  else
+      #    #Compose reverse question
+      #    q = Model::Question.new(:title => meanings[answer], :options => words_text, :correct_id => answer, :keys => keys)
+      #  end
+      #  obs = StatisticsManager.get_observer
+      #  if obs.is_a?(Array)
+      #    obs.each { |ob| q.add_observer(ob)}
+      #  else
+      #    q.add_observer obs  
+      #  end
+      #  
+      #  return q
+      #end
+      
       def generate_question(options)
-        word_count = @dictionary.size(Model::Word)
-        words = []
-        raise "Dictionary does not have enough words" if word_count < options[:answers]
-        
-        rows = []
-        while rows.size < options[:answers]
-          row = rand(word_count)
-          while rows.include?(row)
-            row = (row + 1) % word_count
+        all_words = []
+        wordtable = @dictionary.retrieve_all(Model::Word)
+        raise "Dictionary does not have enough words" if wordtable.size < options[:answers]
+        wordtable.each do |k, w|
+          st = Controller::StatisticsManager.get_statistics.get_words(w.key)
+          tkts = 110 - ( st == nil ? 0 : (st[:score]*100).round )
+          #puts "#{tkts} tickets for #{w.key}"
+          tkts.times do
+            all_words << w
           end
-          rows << row
         end
-        #Get words
-        rows.each {|wrow| words << @dictionary.retrieve(Model::Word, :row => wrow) }
+        
+        word_count =  all_words.size
+        puts "Alternatives = #{word_count}"
+        
+        words = []
+        while words.size < options[:answers]
+          row = rand(word_count)
+          while words.include?(all_words[row])
+            row = rand(word_count)
+          end
+          words << all_words[row]
+        end
         
         answer = rand(words.size)
         keys = words.map {|w| w.key}
@@ -75,7 +123,6 @@ module Quizzer
         
         return q
       end
-      
     end
   end
 end
