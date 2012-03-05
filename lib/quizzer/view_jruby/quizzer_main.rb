@@ -23,6 +23,7 @@
 include Java
 require 'view_jruby/action_button'
 require 'view_jruby/pretty_button'
+require 'view_jruby/border_highlight_button'
 
 module Quizzer
   module View
@@ -48,7 +49,7 @@ module Quizzer
     
       def init_ui
         self.setSize(450,300)
-        self.getContentPane.setBackground(Color::BLACK)
+        self.getContentPane.setBackground(Color::WHITE)
         self.setDefaultCloseOperation(JFrame::EXIT_ON_CLOSE)
         
         @label = JLabel.new
@@ -72,7 +73,7 @@ module Quizzer
         
         
         @in_panel = JPanel.new(GridLayout.new)
-        @in_panel.setBackground(Color.new(0,0,0,1.0))
+        @in_panel.setBackground(Color::WHITE)
         @south_label = JLabel.new
         @bt_stat = ActionButton.new("W") do
           Statistics.new
@@ -82,6 +83,7 @@ module Quizzer
         south_panel.add(@bt_stat, BorderLayout::LINE_END)
         self.getContentPane.add(@label, BorderLayout::NORTH);
         self.getContentPane.add(south_panel, BorderLayout::SOUTH);
+        #self.getContentPane.add(@in_panel, BorderLayout::CENTER);
         self.ask(@@qm.get_question)
         self.setVisible(true)
       end
@@ -111,23 +113,35 @@ module Quizzer
         self.set_stats
         #Set Question title
         @label.setText(question.title)
-        @label.setForeground(Color::WHITE)
+        #@label.setForeground(Color::WHITE)
         @label.setBorder(javax.swing.border.EmptyBorder.new(10,10,10,10))
+        @label.setHorizontalAlignment(JLabel::CENTER)
         
-        @in_panel.removeAll
+        self.getContentPane.remove(@in_panel)
+        @in_panel = JPanel.new(GridLayout.new)
+        @in_panel.setBackground(Color::WHITE)
+        #@in_panel.removeAll
+        #sleep(4)
         @in_panel.getLayout.setRows(question.answers.size)
         @in_panel.getLayout.setColumns(1)
-        r = rand * 0.3 + 0.4
-        g = rand * 0.3 + 0.4
-        b = rand * 0.3 + 0.4
+        
+        border_color = Color.new(0.4, 0.4, 0.4, 1.0)
+        text_color = Color.new(1.0, 1.0, 1.0, 1.0)
+        hover_color = Color.new(0.4, 0.5, 0.4, 1.0)
+        
+        #r = rand * 0.3 + 0.4
+        #g = rand * 0.3 + 0.4
+        #b = rand * 0.3 + 0.4
         question.answers.each_with_index.each do |q, i|
           #button = ActionButton.new(q) do
-          cl = Color.new(r,g,b)
-          hv = Color.new((2+r)/3,(2+g)/3,(2+b)/3) 
+          #cl = Color.new(r,g,b)
+          #hv = Color.new((2+r)/3,(2+g)/3,(2+b)/3) 
           #hv = Color.new(1.0,1.0,1.0,0.5) #Color.new(i/10.0,1.0, i/10.0)
-          button = PrettyButton.new(cl, hv, q, 4) do
+          button = BorderHighlightButton.new(border_color, hover_color, text_color, q, 4, 6) do 
+          #button = PrettyButton.new(cl, hv, q, 4) do
             if question.correct?(i)
-              button.setBackground(java.awt.Color::green)
+              #button.setBackground(java.awt.Color::green)
+              button.setBorderColor(java.awt.Color::green)
               ask(@@qm.get_question)
               #@cm.wait_next_period(self)
               if @cm.get_period > 0
@@ -138,15 +152,17 @@ module Quizzer
                 end
               end
             else
-              button.setBackground(java.awt.Color::red)
+              #button.setBackground(java.awt.Color::red)
+              button.setBorderColor(java.awt.Color::red)
             end
             button.setEnabled(false)
           end
           button.setHorizontalAlignment(JLabel::CENTER)
           @in_panel.add button
+          self.getContentPane.add(@in_panel, BorderLayout::CENTER);
         end
         
-        self.getContentPane.add(@in_panel, BorderLayout::CENTER);
+        #self.getContentPane.add(@in_panel, BorderLayout::CENTER);
         
         #period = @cm.get_period
         #if period > 0
