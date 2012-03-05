@@ -54,9 +54,22 @@ module Quizzer
         @label = JLabel.new
         bkcolor = Color.new(rand * 0.5 + 0.25, rand * 0.5 + 0.25, rand * 0.5 + 0.25)
         
-        #Label
-        #@label = PrettyButton.new(bkcolor, bkcolor, "", 4)
-        #@label.setEnabled(false)
+        #Other stats
+        rightstats = JPanel.new(GridLayout.new(6, 0))
+        label = JLabel.new("<html>Known<br>Words</html>")
+        @known_words = JLabel.new
+        rightstats.add(label)
+        rightstats.add(@known_words)
+        label = JLabel.new("<html>Avg<br>Score</html>")
+        @average_score = JLabel.new
+        rightstats.add(label)
+        rightstats.add(@average_score)
+        label = JLabel.new("<html>Total<br>Score</html>")
+        @total_score = JLabel.new
+        rightstats.add(label)
+        rightstats.add(@total_score)
+        self.getContentPane.add(rightstats, BorderLayout::EAST)
+        
         
         @in_panel = JPanel.new(GridLayout.new)
         @in_panel.setBackground(Color.new(0,0,0,1.0))
@@ -82,14 +95,24 @@ module Quizzer
         st += "<br>General: Correct answered #{stat[:correct]}/#{stat[:questions]} (#{perc} %) Attempt map #{stat[:error_attempt].join('/')}</html>"
       end
       
+      def set_stats
+        stat = @@st.get_words_summary
+        @known_words.setText("#{stat[:known]} / #{stat[:amount]}")
+        val = ( stat[:average_score] * 10000 ).round / 100.0
+        @average_score.setText("#{val}")
+        val = ( stat[:total_score]*100).round
+        @total_score.setText("#{val}")
+        @south_label.setText(self.statsText)
+      end
+      
       def ask(question)
         attempt = 0
         
+        self.set_stats
         #Set Question title
         @label.setText(question.title)
         @label.setForeground(Color::WHITE)
         @label.setBorder(javax.swing.border.EmptyBorder.new(10,10,10,10))
-        @south_label.setText(self.statsText)
         
         @in_panel.removeAll
         @in_panel.getLayout.setRows(question.answers.size)

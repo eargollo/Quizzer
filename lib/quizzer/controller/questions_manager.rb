@@ -82,7 +82,7 @@ module Quizzer
         raise "Dictionary does not have enough words" if wordtable.size < options[:answers]
         wordtable.each do |k, w|
           st = Controller::StatisticsManager.get_statistics.get_words(w.key)
-          tkts = 110 - ( st == nil ? 0 : (st[:score]*100).round )
+          tkts = 105 - ( st == nil ? 0 : (st[:score]*100).round )
           #puts "#{tkts} tickets for #{w.key}"
           tkts.times do
             all_words << w

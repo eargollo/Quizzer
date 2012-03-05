@@ -217,6 +217,20 @@ module Quizzer
         return data
       end
 
+      def delete(instance, options = {})
+        table_class = instance.class
+        raise "Table for object class #{table_class} does not exist" if @tables[table_class] == nil
+        
+        @semaphore.synchronize do
+          @db.transaction do
+			@tables[table_class].delete(instance.key)
+            @db["tables"][table_class].delete(instance.key)
+		  end
+        end
+        
+        return instance
+      end
+	  
       def dump
         @semaphore.synchronize do
           @db.transaction do

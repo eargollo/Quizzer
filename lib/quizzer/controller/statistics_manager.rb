@@ -81,6 +81,7 @@ module Quizzer
           tb = dictionary.retrieve_all(Model::Word)
           @words = {}
           tb.each { |k,w| @words[k] = create_stat}
+          @summary = {:known => 0, :total_score => 0, :average_score => 0, :amount => 0}
         end
         
         def create_stat
@@ -137,10 +138,29 @@ module Quizzer
               end
             end
           end
+          #self.summarize
+        end
+        
+        def summarize
+          @summary = {:known => 0, :total_score => 0, :average_score => 0, :amount => 0}
+          @words.values.each do |stat|
+            if stat[:score] == 1
+              @summary[:known] += 1
+            end
+            @summary[:total_score] += stat[:score]
+            @summary[:amount] += 1
+          end
+          #@summary[:amount] = @words.size
+          @summary[:average_score] = @summary[:total_score] / @summary[:amount]
         end
         
         def get_stats
           @words
+        end
+        
+        def get_summary
+          self.summarize
+          @summary
         end
       end
       
@@ -180,6 +200,10 @@ module Quizzer
       def get_words(key = nil)
         return @words_stats.get_stats if key == nil
         return @words_stats.get_stats[key]
+      end
+      
+      def get_words_summary
+        return @words_stats.get_summary
       end
       
       def update(question, guessed_id, attempts, correct, finished)
