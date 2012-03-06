@@ -45,6 +45,8 @@ module Quizzer
       BT_MARGIN = 2
       BT_BORDER = 4
       
+      FONT_NAME = "Kristen ITC"
+      
       def initialize
         super("Quizzer")
         @@qm = Quizzer::View.get_controller(:manager)
@@ -68,10 +70,15 @@ module Quizzer
         main_panel.add(@stats_panel, BorderLayout::EAST)
         main_panel.add(@question_panel, BorderLayout::CENTER)
         
+        font = java.awt.Font.new(FONT_NAME, java.awt.Font::PLAIN, 18)
+        @ans_font = java.awt.Font.new(FONT_NAME, java.awt.Font::PLAIN, 16)
+        
         #Question panel has the question north, some stats and button south and answers middle
         @question_label = JLabel.new
         @question_label.setBorder(javax.swing.border.EmptyBorder.new(10,10,10,10))
         @question_label.setHorizontalAlignment(JLabel::CENTER)
+        
+        @question_label.setFont(font)
 
         @answers_panel = JPanel.new(GridLayout.new)
         
@@ -85,20 +92,6 @@ module Quizzer
         @question_panel.add(@answers_panel, BorderLayout::CENTER)
         @question_panel.add(south_panel, BorderLayout::SOUTH)
         
-        #Other stats
-        #rightstats = JPanel.new(GridLayout.new(6, 0))
-        #label = JLabel.new("<html>Known<br>Words</html>")
-        #@known_words = JLabel.new
-        #rightstats.add(label)
-        #rightstats.add(@known_words)
-        #label = JLabel.new("<html>Avg<br>Score</html>")
-        #@average_score = JLabel.new
-        #rightstats.add(label)
-        #rightstats.add(@average_score)
-        #label = JLabel.new("<html>Total<br>Score</html>")
-        #@total_score = JLabel.new
-        #rightstats.add(label)
-        #rightstats.add(@total_score)
         self.getContentPane.add(main_panel)
         
         self.ask(@@qm.get_question)
@@ -116,14 +109,7 @@ module Quizzer
       
       def set_stats
         @stats_panel.updateStats
-        #stat = @@st.get_words_summary
-        #@known_words.setText("#{stat[:known]} / #{stat[:amount]}")
-        #val = ( stat[:average_score] * 10000 ).round / 100.0
-        #@average_score.setText("#{val}")
         @session_stats_text.setText(self.statsText)
-        
-        #val = ( stat[:total_score]*100).round 
-        #@total_score.setText("<html>Total Score<br>#{val}</html>")
       end
       
       def ask(question)
@@ -165,6 +151,9 @@ module Quizzer
             button.setEnabled(false)
           end
           button.setHorizontalAlignment(JLabel::CENTER)
+          
+          button.setFont(@ans_font)
+          
           @answers_panel.add button
           @question_panel.add(@answers_panel, BorderLayout::CENTER);
         end

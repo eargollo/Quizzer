@@ -88,6 +88,10 @@ module Quizzer
         @label.setText(text)
       end
       
+      def setFont(font)
+        @label.setFont(font)
+      end
+      
       def processMouseEvent(e)
         if @enable
           if e.getID == java.awt.event.MouseEvent::MOUSE_ENTERED
