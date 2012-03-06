@@ -28,20 +28,28 @@ module Quizzer
     import javax.swing.border.EmptyBorder
     import javax.swing.JLabel
 
-    class BorderHighlightButton < JPanel
+    class BorderHighlightPanel < JPanel
       alias :super_setBackground :setBackground
+      alias :super_add :add
       
-      def initialize(border_color, hover_color, label_color, label, margin_size, border_size, &action)
+      TRANSPARENT = java.awt.Color.new(0,0,0,0.0)
+      
+      def initialize(layout = java.awt.BorderLayout.new,
+                     border_color = TRANSPARENT,
+                     hover_color = TRANSPARENT,
+                     margin_size = 0,
+                     border_size = 1,
+                     &action)
+        
         super(GridLayout.new(1,0))
         
         @action = action
         @enable = true
         @border_color = border_color
         @hover_color = hover_color
-        @label_color = label_color
         
         #TODO: take this out or put a transparent back
-        self.super_setBackground(java.awt.Color.new(0,0,0,0.0))
+        self.super_setBackground(TRANSPARENT)
         
         margin = EmptyBorder.new(margin_size, margin_size, margin_size, margin_size)
         self.setBorder(margin)
@@ -51,19 +59,16 @@ module Quizzer
         border = EmptyBorder.new(border_size, border_size, border_size, border_size)
         @in_panel.setBorder(border)
         
-        @label = javax.swing.JLabel.new(label)
-        @label.setBackground(@label_color)
-        @label.setOpaque(true)
+        @panel = JPanel.new(layout)
         
-        @in_panel.add(@label)
-        self.add(@in_panel)
+        @in_panel.add(@panel)
+        self.super_add(@in_panel)
 
         self.enableEvents(java.awt.AWTEvent::MOUSE_EVENT_MASK)
       end
       
-      
       def setBackground(color)
-        @label.setBackground(color)
+        @panel.setBackground(color)
       end
       
       def setBorderColor(color)
@@ -77,15 +82,11 @@ module Quizzer
           @in_panel.setBackground(@border_color)
         end
 
-        @label.setEnabled(en)
+        @panel.setEnabled(en)
       end
       
-      def setHorizontalAlignment(orientation)
-        @label.setHorizontalAlignment(orientation)
-      end
-      
-      def setText(text)
-        @label.setText(text)
+      def add(*parms)
+        @panel.add(*parms)
       end
       
       def processMouseEvent(e)

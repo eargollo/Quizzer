@@ -24,6 +24,7 @@ include Java
 require 'view_jruby/action_button'
 require 'view_jruby/pretty_button'
 require 'view_jruby/border_highlight_button'
+require 'view_jruby/border_highlight_panel'
 
 module Quizzer
   module View
@@ -38,6 +39,12 @@ module Quizzer
   
     class QuizzerMain < JFrame
       
+      BORDER_COLOR = Color.new(0.7, 0.8, 0.6, 1.0)
+      BORDER_HIGHLIGHT = Color.new(0.6, 0.8, 0.6, 1.0)
+      TEXT_BG_COLOR = Color::WHITE
+      BT_MARGIN = 2
+      BT_BORDER = 4
+      
       def initialize
         super("Quizzer")
         @@qm = Quizzer::View.get_controller(:manager)
@@ -48,46 +55,56 @@ module Quizzer
       end
     
       def init_ui
-        self.setSize(450,300)
+        self.setSize(550,300)
         self.getContentPane.setBackground(Color::WHITE)
         self.setDefaultCloseOperation(JFrame::EXIT_ON_CLOSE)
         
-        @label = JLabel.new
-        bkcolor = Color.new(rand * 0.5 + 0.25, rand * 0.5 + 0.25, rand * 0.5 + 0.25)
+        #Main panel: side for stats and middle for everything else
+        main_panel = JPanel.new(BorderLayout.new)
+        
+        @question_panel = JPanel.new(BorderLayout.new)
+        @stats_panel = StatisticsPanel.new(@@st)
+        
+        main_panel.add(@stats_panel, BorderLayout::EAST)
+        main_panel.add(@question_panel, BorderLayout::CENTER)
+        
+        #Question panel has the question north, some stats and button south and answers middle
+        @question_label = JLabel.new
+        @question_label.setBorder(javax.swing.border.EmptyBorder.new(10,10,10,10))
+        @question_label.setHorizontalAlignment(JLabel::CENTER)
+
+        @answers_panel = JPanel.new(GridLayout.new)
+        
+        south_panel = JPanel.new(BorderLayout.new)
+        @session_stats_text = JLabel.new
+
+        south_panel.add(@session_stats_text, BorderLayout::CENTER);
+        #south_panel.add(bt_stat, BorderLayout::LINE_END)
+
+        @question_panel.add(@question_label, BorderLayout::NORTH)
+        @question_panel.add(@answers_panel, BorderLayout::CENTER)
+        @question_panel.add(south_panel, BorderLayout::SOUTH)
         
         #Other stats
-        rightstats = JPanel.new(GridLayout.new(6, 0))
-        label = JLabel.new("<html>Known<br>Words</html>")
-        @known_words = JLabel.new
-        rightstats.add(label)
-        rightstats.add(@known_words)
-        label = JLabel.new("<html>Avg<br>Score</html>")
-        @average_score = JLabel.new
-        rightstats.add(label)
-        rightstats.add(@average_score)
-        label = JLabel.new("<html>Total<br>Score</html>")
-        @total_score = JLabel.new
-        rightstats.add(label)
-        rightstats.add(@total_score)
-        self.getContentPane.add(rightstats, BorderLayout::EAST)
+        #rightstats = JPanel.new(GridLayout.new(6, 0))
+        #label = JLabel.new("<html>Known<br>Words</html>")
+        #@known_words = JLabel.new
+        #rightstats.add(label)
+        #rightstats.add(@known_words)
+        #label = JLabel.new("<html>Avg<br>Score</html>")
+        #@average_score = JLabel.new
+        #rightstats.add(label)
+        #rightstats.add(@average_score)
+        #label = JLabel.new("<html>Total<br>Score</html>")
+        #@total_score = JLabel.new
+        #rightstats.add(label)
+        #rightstats.add(@total_score)
+        self.getContentPane.add(main_panel)
         
-        
-        @in_panel = JPanel.new(GridLayout.new)
-        @in_panel.setBackground(Color::WHITE)
-        @south_label = JLabel.new
-        @bt_stat = ActionButton.new("W") do
-          Statistics.new
-        end
-        south_panel = JPanel.new(BorderLayout.new)
-        south_panel.add(@south_label, BorderLayout::CENTER);
-        south_panel.add(@bt_stat, BorderLayout::LINE_END)
-        self.getContentPane.add(@label, BorderLayout::NORTH);
-        self.getContentPane.add(south_panel, BorderLayout::SOUTH);
-        #self.getContentPane.add(@in_panel, BorderLayout::CENTER);
         self.ask(@@qm.get_question)
         self.setVisible(true)
       end
-      
+            
       def statsText
         stat = @@st.get_session
         perc = stat[:questions] == 0 ? nil : (100 * stat[:correct])/stat[:questions]
@@ -98,13 +115,15 @@ module Quizzer
       end
       
       def set_stats
-        stat = @@st.get_words_summary
-        @known_words.setText("#{stat[:known]} / #{stat[:amount]}")
-        val = ( stat[:average_score] * 10000 ).round / 100.0
-        @average_score.setText("#{val}")
-        val = ( stat[:total_score]*100).round
-        @total_score.setText("#{val}")
-        @south_label.setText(self.statsText)
+        @stats_panel.updateStats
+        #stat = @@st.get_words_summary
+        #@known_words.setText("#{stat[:known]} / #{stat[:amount]}")
+        #val = ( stat[:average_score] * 10000 ).round / 100.0
+        #@average_score.setText("#{val}")
+        @session_stats_text.setText(self.statsText)
+        
+        #val = ( stat[:total_score]*100).round 
+        #@total_score.setText("<html>Total Score<br>#{val}</html>")
       end
       
       def ask(question)
@@ -112,35 +131,24 @@ module Quizzer
         
         self.set_stats
         #Set Question title
-        @label.setText(question.title)
+        @question_label.setText(question.title)
         #@label.setForeground(Color::WHITE)
-        @label.setBorder(javax.swing.border.EmptyBorder.new(10,10,10,10))
-        @label.setHorizontalAlignment(JLabel::CENTER)
         
-        self.getContentPane.remove(@in_panel)
-        @in_panel = JPanel.new(GridLayout.new)
-        @in_panel.setBackground(Color::WHITE)
+        @question_panel.remove(@answers_panel)
+        @answers_panel = JPanel.new(GridLayout.new)
+        @answers_panel.setBackground(Color::WHITE)
         #@in_panel.removeAll
         #sleep(4)
-        @in_panel.getLayout.setRows(question.answers.size)
-        @in_panel.getLayout.setColumns(1)
+        @answers_panel.getLayout.setRows(question.answers.size)
+        @answers_panel.getLayout.setColumns(1)
         
         border_color = Color.new(0.4, 0.4, 0.4, 1.0)
         text_color = Color.new(1.0, 1.0, 1.0, 1.0)
         hover_color = Color.new(0.4, 0.5, 0.4, 1.0)
         
-        #r = rand * 0.3 + 0.4
-        #g = rand * 0.3 + 0.4
-        #b = rand * 0.3 + 0.4
         question.answers.each_with_index.each do |q, i|
-          #button = ActionButton.new(q) do
-          #cl = Color.new(r,g,b)
-          #hv = Color.new((2+r)/3,(2+g)/3,(2+b)/3) 
-          #hv = Color.new(1.0,1.0,1.0,0.5) #Color.new(i/10.0,1.0, i/10.0)
-          button = BorderHighlightButton.new(border_color, hover_color, text_color, q, 4, 6) do 
-          #button = PrettyButton.new(cl, hv, q, 4) do
+          button = BorderHighlightButton.new(border_color, hover_color, text_color, q, BT_MARGIN, BT_BORDER) do 
             if question.correct?(i)
-              #button.setBackground(java.awt.Color::green)
               button.setBorderColor(java.awt.Color::green)
               ask(@@qm.get_question)
               #@cm.wait_next_period(self)
@@ -152,26 +160,14 @@ module Quizzer
                 end
               end
             else
-              #button.setBackground(java.awt.Color::red)
               button.setBorderColor(java.awt.Color::red)
             end
             button.setEnabled(false)
           end
           button.setHorizontalAlignment(JLabel::CENTER)
-          @in_panel.add button
-          self.getContentPane.add(@in_panel, BorderLayout::CENTER);
+          @answers_panel.add button
+          @question_panel.add(@answers_panel, BorderLayout::CENTER);
         end
-        
-        #self.getContentPane.add(@in_panel, BorderLayout::CENTER);
-        
-        #period = @cm.get_period
-        #if period > 0
-        #  self.setVisible(false);
-        #  #@cm.wait_next_period
-        #  sleep(period)
-        #end
-        #self.setVisible(true);
-        
       end
       
       TIMES = [ { :name => "Continuous quiz", :time => 0 },
@@ -223,6 +219,74 @@ module Quizzer
         tray = java.awt.SystemTray::system_tray
         tray.add(tray_icon)
       end
-    end  
+    end
+    
+    class StatisticsPanel < JPanel
+      STATS = 4
+      def initialize(st)
+        super(GridLayout.new)
+        self.getLayout.setRows(STATS)
+        
+        @st = st
+        
+        @total_score = StatView.new("Total Score")
+        @avg_score   = StatView.new("Avg Score")
+        @known_words = StatView.new("Known Words")
+
+        bt_stat = ActionButton.new("Words Details") do
+          Statistics.new
+        end
+
+        #@total_score = StatView.new("Total Score", 0)
+        self.add(@total_score)
+        self.add(@avg_score)
+        self.add(@known_words)
+        self.add(bt_stat)
+      end
+      
+      def updateStats
+        stat = @st.get_words_summary
+        @known_words.setValue("#{stat[:known]} / #{stat[:amount]}")
+        
+        val = ( stat[:average_score] * 10000 ).round / 100.0
+        @avg_score.setValue(val)
+        
+        val = ( stat[:total_score]*100).round 
+        @total_score.setValue(val)
+      end
+    end
+  
+    class StatView < BorderHighlightPanel
+      BORDER_COLOR = Color.new(0.7, 0.8, 0.6, 1.0)
+      BORDER_HIGHLIGHT = Color.new(0.6, 0.8, 0.6, 1.0)
+      TEXT_BG_COLOR = Color::WHITE
+      BT_MARGIN = 0
+      BT_BORDER = 2
+
+      def initialize(title = "", value = "")
+        super(GridLayout.new(2,0), BORDER_COLOR, BORDER_HIGHLIGHT, BT_MARGIN, BT_BORDER)
+        #self.setHorizontalAlignment(JLabel::CENTER)
+        
+        @title_label = JLabel.new(title.to_s)
+        @title_label.setHorizontalAlignment(JLabel::CENTER)
+        @value_label = JLabel.new(value.to_s)
+        @value_label.setHorizontalAlignment(JLabel::CENTER)
+        
+        self.add(@title_label)
+        self.add(@value_label)
+        
+      end
+      
+      def setValue(value)
+        @value_label.setText(value.to_s)
+      end
+      
+      def setTitle(title)
+        @title_label.setText(title.to_s)
+      end
+      
+    end
+
   end
+  
 end
