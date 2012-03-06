@@ -6,8 +6,8 @@ require 'view_jruby/statistics'
 require 'view_jruby/quizzer_main'
 
 module Quizzer
-  VERSION = '0.1'
-  RELEASE = Time.utc(2012,1,27, 16, 14, 0)
+  VERSION = '0.5'
+  RELEASE = Time.utc(2012,3,5, 22, 05, 0)
 
   module View
     def run
