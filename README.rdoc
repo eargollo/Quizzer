@@ -67,7 +67,7 @@ Development has just started. Features to come then:
 
 * Download and instal JRuby with Java SDK (exe+jre) from http://jruby.org/
 * Don't forget to put JRuby executable at the path
-* Download the project from GitHub at https://github.com/eargollo/Quizzer/zipball/jruby_v_0_4
+* Download the project from GitHub at https://github.com/eargollo/Quizzer/zipball/jruby_v_0_5
 * Unzip at the folder you prefer
 * Import words running from command line:
   [YOUR_FOLDER]\bin\jQuizzer -i [CSV FILE]
