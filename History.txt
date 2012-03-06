@@ -1,6 +1,10 @@
-=== 0.0.6
+=== 0.0.6 2012-03-05
 
 * Add to word the date they were inserted
+* Changed the visual to something cleaner
+* Put statistics on the side (created component for that)
+* Cleaner the code as a general
+* Words participation in questions are related to their score
 
 === 0.0.5 2012-01-30
 

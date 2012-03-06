@@ -36,9 +36,10 @@ The JRuby version is the most advanced one and enables:
 * Add words/meanings through a CSV file
   * File should have word,meaning one per line
   * In order to import execute bin/quizzer -i [FILE]
-* Quizz words/meaning non-stop using jRuby (STABLE)
+* Quizz words/meaning non-stop
   * Run jQuizzer.bat in windows
   * Run jQuizzer in linux
+* Words that are not well known appear more frequently
 * View words learning statistics
   * A score is calculated from all the answers. The socore goes from 0 to 100
     showing how known a word is (0 - not known at all and 100 - Very known)
@@ -49,7 +50,6 @@ The JRuby version is the most advanced one and enables:
 
 Development has just started. Features to come then:
 
-* Avoid well known words based on words scoring
 * Get a beautiful and cleaner interface
 
 == SYNOPSIS:
@@ -61,21 +61,10 @@ Development has just started. Features to come then:
 
 == REQUIREMENTS:
 
-JRuby version (the most advanced and stable one):
 * JRuby (http://jruby.org/): Download and install the exe+jre version
-
-RedShoes version (very limited):
-
-* RedShoes
-
-GreenShoes version (still not working)
-
-* Ruby
-* Ruby Green Shoes gem
 
 == INSTALL:
 
-JRuby version:
 * Download and instal JRuby with Java SDK (exe+jre) from http://jruby.org/
 * Don't forget to put JRuby executable at the path
 * Download the project from GitHub at https://github.com/eargollo/Quizzer/zipball/jruby_v_0_4
@@ -90,17 +79,6 @@ o jogo, game
 
 * Run the quizzer and have fun: Just double click on [YOUR FOLDER]\bin\jQuizzer
 * If you want Quizzer to ask periodically for words, go on the system tray icon and set the period
-
-RedShoes version (very limited):
-
-* Download and install Shoes from http://shoesrb.com/
-* Put Shoes on your system PATH
-* Windows: Execute 'bin\quizzer_red.bat'
-* Linux: Execute 'shoes lib/quizzer_red.rb' 
-
-GreenShoes
-
-* NOT FUNCTIONAL YET!
 
 == LICENSE:
 
