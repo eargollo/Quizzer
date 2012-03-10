@@ -21,7 +21,6 @@
 #THE SOFTWARE.
 
 include Java
-#require 'view_jruby/action_button'
 
 module Quizzer
   module View

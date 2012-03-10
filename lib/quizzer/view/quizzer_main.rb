@@ -21,10 +21,10 @@
 #THE SOFTWARE.
 
 include Java
-require 'view_jruby/action_button'
-require 'view_jruby/pretty_button'
-require 'view_jruby/border_highlight_button'
-require 'view_jruby/border_highlight_panel'
+require 'view/action_button'
+require 'view/pretty_button'
+require 'view/border_highlight_button'
+require 'view/border_highlight_panel'
 
 module Quizzer
   module View

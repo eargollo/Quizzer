@@ -4,12 +4,16 @@ $:.unshift(File.dirname(__FILE__)) unless
 require "quizzer/model"
 require "quizzer/controller"
 require "quizzer/tools"
+require "quizzer/view"
 
 module Quizzer
   DEFAULTS = {:dict_dbfile   => "~/.pangea/quizzer/data/dictionary.pstore",
               :database_file => "~/.pangea/quizzer/data/database.pstore" ,
               }
-  
+
+  VERSION = '0.5'
+  RELEASE = Time.utc(2012,3,5, 22, 5, 0)
+
   class Main
     def self.run(argv, env, configuration)
       options = Tools::CommandlineParser.parse(File.basename($0), argv)

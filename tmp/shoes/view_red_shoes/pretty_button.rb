@@ -1,5 +1,5 @@
 # Quizzer - language quiz
-# Copyright (C) 2012  Eduardo Argollo
+# Copyright (C) 2011  Eduardo Argollo
 #
 #MIT License
 #Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,39 +20,25 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
-require 'view_jruby/hover_action_label'
-module Quizzer
-  module View
-    import javax.swing.JPanel
-    import javax.swing.border.EmptyBorder
-    import javax.swing.JLabel
-    class PrettyButton < JPanel
-      alias :super_setBackground :setBackground
-      
-      def initialize(color, hover, label, border_size, &action)
-        super(GridLayout.new(1,0))
-        self.super_setBackground(java.awt.Color.new(0,0,0,1.0))
-        @border = EmptyBorder.new(border_size, border_size, border_size, border_size)
-        self.setBorder(@border)
-        @label = HoverActionLabel.new(color, hover, label, &action)
-        self.add(@label)
-      end
-      
-      def setBackground(color)
-        @label.setBackcolor(color)
-      end
-      
-      def setEnabled(en)
-        @label.setEnabled(en)
-      end
-      
-      def setHorizontalAlignment(orientation)
-        @label.setHorizontalAlignment(orientation)
-      end
-      
-      def setText(text)
-        @label.setText(text)
-      end
+class PrettyButton < Shoes::Widget
+  def initialize(label, col=nil)
+    col ||= rgb(rand * 0.3 + 0.7, rand * 0.3 + 0.7, rand * 0.3 + 0.7, 0.5)
+    @label = label
+    @flow = flow :margin => 20 do
+      @back = background col, :curve => 20
+      para label, :align => 'center'
+      click { yield }
+      hover { |me| me.append { @hoverbg = background rgb(1.0,1.0,1.0,0.5), :curve => 20 } }
+      leave { @hoverbg.remove}
     end
+  end
+  
+  def changeHighlight(col=nil)
+    col ||= rgb(rand * 0.3 + 0.7, rand * 0.3 + 0.7, rand * 0.3 + 0.7, 0.5)
+    
+    debug @back.style 
+    #debug @back.methods.join("\n")
+    @back.remove
+    @flow.prepend {background col, :curve => 20}
   end
 end

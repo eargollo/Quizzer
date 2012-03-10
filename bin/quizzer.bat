@@ -1,3 +1,3 @@
 @ECHO OFF 
 
-ruby %~dp0\quizzer %*
+jruby %~dp0\quizzer %*

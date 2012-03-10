@@ -21,7 +21,6 @@
 #THE SOFTWARE.
 
 
-#require 'view_jruby/hover_action_label'
 module Quizzer
   module View
     import javax.swing.JPanel
