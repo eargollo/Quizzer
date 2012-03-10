@@ -4,6 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'view'
 require 'view_jruby/statistics'
 require 'view_jruby/quizzer_main'
+require 'view_jruby/add_words'
 
 module Quizzer
   VERSION = '0.5'

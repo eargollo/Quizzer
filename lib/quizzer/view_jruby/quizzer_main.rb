@@ -199,8 +199,16 @@ module Quizzer
         
         # Give the tray an icon and attach the popup menu to it
         path = File.expand_path(File.dirname(__FILE__))
-        image_path = "#{path}/images/systray.gif"
-        image = java.awt.Toolkit::default_toolkit.get_image(image_path)
+        image_path = "#{path}/../images/quizzer.png"
+        image = nil
+        if File.exists?(image_path)
+          image = java.awt.Toolkit::default_toolkit.get_image(image_path)
+        else
+          file = "lib/quizzer/images/quizzer.png"
+          url = getClass.getClassLoader.getResource(file)
+          #puts "url '#{url}'"
+          image = java.awt.Toolkit::default_toolkit.get_image(url)
+        end
         tray_icon = TrayIcon.new(image, "Quizzer!", popup)
         tray_icon.image_auto_size = true
         
@@ -220,7 +228,9 @@ module Quizzer
         
         @total_score = StatView.new("Total Score")
         @avg_score   = StatView.new("Avg Score")
-        @known_words = StatView.new("Known Words")
+        @known_words = StatView.new("Known Words") do
+          AddWords.new
+        end
 
         bt_stat = ActionButton.new("Words Details") do
           Statistics.new
@@ -229,7 +239,7 @@ module Quizzer
         #@total_score = StatView.new("Total Score", 0)
         self.add(@total_score)
         self.add(@avg_score)
-        self.add(@known_words)
+        self.add(@known_words) 
         self.add(bt_stat)
       end
       
@@ -252,8 +262,8 @@ module Quizzer
       BT_MARGIN = 0
       BT_BORDER = 2
 
-      def initialize(title = "", value = "")
-        super(GridLayout.new(2,0), BORDER_COLOR, BORDER_HIGHLIGHT, BT_MARGIN, BT_BORDER)
+      def initialize(title = "", value = "", &blk)
+        super(GridLayout.new(2,0), BORDER_COLOR, BORDER_HIGHLIGHT, BT_MARGIN, BT_BORDER, &blk)
         #self.setHorizontalAlignment(JLabel::CENTER)
         
         @title_label = JLabel.new(title.to_s)

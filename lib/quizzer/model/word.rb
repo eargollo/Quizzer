@@ -29,12 +29,12 @@ module Quizzer
       TYPES = [:substantive, :verb]
       GENDERS = { "der" => :masculine, "die" => :feminine, "das" => :neutral}
       
-      def initialize(data = nil)
+      def initialize(data = nil, encoded = false)
 	return if data == nil
         if data[:version] != nil
           load(data)
         else
-          parse(data)
+          parse(data, encoded)
         end
       end
       
@@ -112,7 +112,8 @@ module Quizzer
       end
       
       private
-      def parse(data)
+      
+      def parse(data, encoded = false)
         raise "Word is required" if data[:word] == nil
         raise "Meaning is required" if data[:meaning] == nil
         if data[:version] != nil
@@ -128,15 +129,14 @@ module Quizzer
             @data[:type] = :substantive
             @data[:gender] = GENDERS[possible_article]
             @data[:article] = possible_article
-            @data[:word] = data[:word].strip.unpack("C*").pack("U*")
-            @data[:word_parsed] = parts[1..-1].join(" ").strip.unpack("C*").pack("U*")
-            @data[:meaning] = data[:meaning].strip.unpack("C*").pack("U*")
+            #puts "Word '#{data[:word]}' enconding" + data[:word].encoding.name
+            @data[:word_parsed] = encoded ? parts[1..-1].join(" ").strip : parts[1..-1].join(" ").strip.unpack("C*").pack("U*")
           else
             @data[:type] = :unknown
-            @data[:word] = data[:word].strip.unpack("C*").pack("U*")
-            @data[:word_parsed] = data[:word].strip.unpack("C*").pack("U*")
-            @data[:meaning] = data[:meaning].strip.unpack("C*").pack("U*")    
+	    @data[:word_parsed] = encoded ? data[:word].strip : data[:word].strip.unpack("C*").pack("U*")
           end
+	  @data[:word] = encoded ? data[:word].strip : data[:word].strip.unpack("C*").pack("U*")
+	  @data[:meaning] = encoded ? data[:meaning].strip : data[:meaning].strip.unpack("C*").pack("U*")
         end
       end
     end
