@@ -28,8 +28,8 @@
 #4) A method called dump that should return the data to be stored
 
 
-require 'pstore'
 require 'csv'
+require 'pstore'
 require 'thread'
 
 require "model/word"
@@ -128,6 +128,7 @@ module Quizzer
         options = {:duplicate => :fail}.merge(options)
         raise "Table for object class #{table_class} does not exist" if @tables[table_class] == nil
         #TODO: Check if method dump is declared in the class
+        raise "Attempt to insert null key" if instance.key == nil
         
         @semaphore.synchronize do
           if @tables[table_class][instance.key] == nil || options[:duplicate] == :replace
