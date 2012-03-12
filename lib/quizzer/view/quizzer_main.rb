@@ -224,17 +224,7 @@ module Quizzer
         end
         
         # Give the tray an icon and attach the popup menu to it
-        path = File.expand_path(File.dirname(__FILE__))
-        image_path = "#{path}/../images/quizzer.png"
-        image = nil
-        if File.exists?(image_path)
-          image = java.awt.Toolkit::default_toolkit.get_image(image_path)
-        else
-          file = "lib/quizzer/images/quizzer.png"
-          url = getClass.getClassLoader.getResource(file)
-          #puts "url '#{url}'"
-          image = java.awt.Toolkit::default_toolkit.get_image(url)
-        end
+        image = java.awt.Toolkit::default_toolkit.get_image(self.get_image_url("quizzer.png"))
         tray_icon = TrayIcon.new(image, "Quizzer!", popup)
         tray_icon.image_auto_size = true
         
@@ -282,10 +272,7 @@ module Quizzer
 
         toolbar = JToolBar.new
 
-        path = File.expand_path(File.dirname(__FILE__))
-        file = File.expand_path(path+"/../images/plus_32.png")
-        
-        iconAdd = ImageIcon.new(file)
+        iconAdd = ImageIcon.new(Quizzer::View::QuizzerMain.getMainWindow.get_image_url("plus_32.png"))
 
         addButton = JButton.new iconAdd
         addButton.addActionListener do |e|
@@ -294,9 +281,7 @@ module Quizzer
         
         toolbar.add addButton
 
-        file = File.expand_path(path+"/../images/upload.png")
-        
-        iconImport = ImageIcon.new(file)
+        iconImport = ImageIcon.new(Quizzer::View::QuizzerMain.getMainWindow.get_image_url("upload.png"))
 
         importButton = JButton.new iconImport
         importButton.addActionListener do |e|
@@ -305,9 +290,7 @@ module Quizzer
         
         toolbar.add importButton
 
-        file = File.expand_path(path+"/../images/word.png")
-        
-        iconList = ImageIcon.new(file)
+        iconList = ImageIcon.new(Quizzer::View::QuizzerMain.getMainWindow.get_image_url("word.png"))
 
         listButton = JButton.new iconList
         listButton.addActionListener do |e|

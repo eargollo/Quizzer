@@ -33,8 +33,20 @@ module Quizzer
       end
       
       def set_icon
-        file = File.expand_path(File.dirname(__FILE__)) + "/../images/quizzer.png"
+        file = self.get_image_url("quizzer.png")
         setIconImage(Toolkit.getDefaultToolkit().getImage(file))
+      end
+      
+      def get_image_url(filename)
+        path = File.expand_path(File.dirname(__FILE__))
+        image_path = File.expand_path("#{path}/../images/filename")
+        if File.exists?(image_path)
+          return image_path
+        else
+          file = "lib/quizzer/images/#{filename}"
+          url = getClass.getClassLoader.getResource(file)
+          return url
+        end
       end
     end
   end
