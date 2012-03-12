@@ -1,19 +1,10 @@
 clean_list = [
-  "bin/quizzer",
-  "bin/quizzer.bat",
-  "bin/quizzer_red.bat",
-  "lib/quizzer/view",
-  "lib/quizzer/view_red_shoes",
-  "lib/quizzer/view_green_shoes.rb",
-  "lib/quizzer/view_red_shoes.rb",
-  "lib/quizzer_green.rb",
-  "lib/quizzer_red.rb",
   "tmp",
   "script",
   "test",
-  "Rakefile",
   "Manifest.txt",
-  "PostInstall.txt"
+  "PostInstall.txt",
+  "Rakefile.template"
 ]
 
 
