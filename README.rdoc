@@ -15,8 +15,8 @@ quiz you periodically. Quizz will opens a window and ask a word every
 10 minutes for example. You can learn while working.
 
 The vocabulary might be imported from simple comma separated values
-files. Create the file while you learn and import to the application
-for quizzing.
+files or added through a form. Create the file while you learn and
+import to the application for quizzing.
 
 Files should be in format word,definition such as (assuming Portuguese
 as foreign language):
@@ -29,16 +29,14 @@ Quizzer dinamically quiz more the words that you know the least.
 
 Keep your score sheet, learn some words and, most of all, have fun!
 
-== FEATURES/PROBLEMS:
-
-The JRuby version is the most advanced one and enables:
+== FEATURES:
 
 * Add words/meanings through a CSV file
   * File should have word,meaning one per line
-  * In order to import execute bin/quizzer -i [FILE]
+  * In order to import click on the file icon at the toolbar
 * Quizz words/meaning non-stop
-  * Run jQuizzer.bat in windows
-  * Run jQuizzer in linux
+  * Run quizzer.bat in windows (if you dont use the installer)
+  * Run quizzer in linux
 * Words that are not well known appear more frequently
 * View words learning statistics
   * A score is calculated from all the answers. The socore goes from 0 to 100
@@ -50,7 +48,7 @@ The JRuby version is the most advanced one and enables:
 
 Development has just started. Features to come then:
 
-* Get a beautiful and cleaner interface
+* Give the possibility to delete words
 
 == SYNOPSIS:
 
@@ -61,23 +59,15 @@ Development has just started. Features to come then:
 
 == REQUIREMENTS:
 
-* JRuby (http://jruby.org/): Download and install the exe+jre version
+* Java if installed though the installer.
+
+* JRuby (http://jruby.org/) if not: Download and install the exe+jre version
 
 == INSTALL:
 
-* Download and instal JRuby with Java SDK (exe+jre) from http://jruby.org/
-* Don't forget to put JRuby executable at the path
-* Download the project from GitHub at https://github.com/eargollo/Quizzer/zipball/jruby_v_0_5
-* Unzip at the folder you prefer
-* Import words running from command line:
-  [YOUR_FOLDER]\bin\jQuizzer -i [CSV FILE]
-  * The csv file should have lines with word, meaning
-  * Example: For someone learning Portugueses the file could be:
-o amigo, friend
-a casa, house
-o jogo, game
-
-* Run the quizzer and have fun: Just double click on [YOUR FOLDER]\bin\jQuizzer
+* If you are a windows user, just download the installar package and install it.
+* Other users, download the java tarball and run quizzer.jar
+* If you want to run through source code, download and instal JRuby with Java SDK (exe+jre) from http://jruby.org/ and clone the code
 * If you want Quizzer to ask periodically for words, go on the system tray icon and set the period
 
 == LICENSE:

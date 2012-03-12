@@ -1,3 +1,12 @@
+=== 1.0   2012-03-11
+
+* Created the toolbar that gives access to other windows
+* Created window for adding a word
+* Created window for importing a CSV file
+* Added icon to the application
+* Created packaging for jar
+* Created installer
+
 === 0.0.6 2012-03-05
 
 * Add to word the date they were inserted
