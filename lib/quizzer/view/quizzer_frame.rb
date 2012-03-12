@@ -39,7 +39,7 @@ module Quizzer
       
       def get_image_url(filename)
         path = File.expand_path(File.dirname(__FILE__))
-        image_path = File.expand_path("#{path}/../images/filename")
+        image_path = File.expand_path("#{path}/../images/#{filename}")
         if File.exists?(image_path)
           return image_path
         else

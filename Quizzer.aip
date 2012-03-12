@@ -6,10 +6,10 @@
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPPRODUCTICON" Value="quizzer_1.exe" Type="8"/>
     <ROW Property="Manufacturer" Value="Pangea Projects" ValueLocId="*"/>
-    <ROW Property="ProductCode" Value="1033:{07825850-11E9-4C01-A5C7-84E148140D6C} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{23316B03-F91F-45C7-B3F9-681DBDF824A6} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Quizzer" ValueLocId="*"/>
-    <ROW Property="ProductVersion" Value="0.0.6b"/>
+    <ROW Property="ProductVersion" Value="1.0.0"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{EA5CE1E1-B82F-4AE1-B9E8-D6E9D09D60F6}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>

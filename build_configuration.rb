@@ -13,7 +13,7 @@ configuration do |c|
 	# default value: "main"
 	#
 	#c.main_ruby_file = "main"
-	c.main_ruby_file = "lib/bin/quizzer"
+	c.main_ruby_file = "lib/bin/jquizzer"
 
 	# The fully-qualified name of the main Java file used to initiate the application.
 	# default value: "org.rubyforge.rawr.Main"
@@ -23,7 +23,7 @@ configuration do |c|
 	# A list of directories where source files reside
 	# default value: ["src"]
 	#
-	c.source_dirs = ["src", "lib", "bin"]
+	c.source_dirs = ["src", "lib"]
 
 	# A list of regexps of files to exclude
 	# default value: []

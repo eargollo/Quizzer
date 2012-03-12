@@ -272,7 +272,8 @@ module Quizzer
 
         toolbar = JToolBar.new
 
-        iconAdd = ImageIcon.new(Quizzer::View::QuizzerMain.getMainWindow.get_image_url("plus_32.png"))
+        main = QuizzerMain.getMainWindow
+        iconAdd = ImageIcon.new(main.get_image_url("plus_32.png"))
 
         addButton = JButton.new iconAdd
         addButton.addActionListener do |e|
@@ -281,7 +282,7 @@ module Quizzer
         
         toolbar.add addButton
 
-        iconImport = ImageIcon.new(Quizzer::View::QuizzerMain.getMainWindow.get_image_url("upload.png"))
+        iconImport = ImageIcon.new(main.get_image_url("upload.png"))
 
         importButton = JButton.new iconImport
         importButton.addActionListener do |e|
@@ -290,7 +291,7 @@ module Quizzer
         
         toolbar.add importButton
 
-        iconList = ImageIcon.new(Quizzer::View::QuizzerMain.getMainWindow.get_image_url("word.png"))
+        iconList = ImageIcon.new(main.get_image_url("word.png"))
 
         listButton = JButton.new iconList
         listButton.addActionListener do |e|
