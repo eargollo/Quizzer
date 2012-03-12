@@ -31,6 +31,10 @@ module Quizzer
         if !@@db.exists_table?(Model::Question)
           @@db.create_table(Model::Question)
         end
+        load
+      end
+      
+      def self.load
         @@stats = Statistics.new(@@db.retrieve_all(Model::Question))
       end
     
@@ -151,7 +155,11 @@ module Quizzer
             @summary[:amount] += 1
           end
           #@summary[:amount] = @words.size
-          @summary[:average_score] = @summary[:total_score] / @summary[:amount]
+          if @summary[:amount] == 0
+            @summary[:average_score] = 0
+          else
+            @summary[:average_score] = @summary[:total_score] / @summary[:amount]
+          end
         end
         
         def get_stats

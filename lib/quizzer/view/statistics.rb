@@ -22,16 +22,17 @@
 
 include Java
 
+require 'view/quizzer_frame'
+
 module Quizzer
   module View
     import javax.swing.JFrame
     import javax.swing.JTable
   
-    class Statistics < JFrame
+    class Statistics < QuizzerFrame
       
       def initialize
         super("Statistics")
-        @@st = Quizzer::View.get_controller(:statistics)
         @word_database = Quizzer::View.get_controller(:dictionary)
         self.init_ui
       end
@@ -40,7 +41,7 @@ module Quizzer
         self.setSize(800,600)
         #self.setDefaultCloseOperation(JFrame::EXIT_ON_CLOSE)
         
-        words = @@st.get_words
+        words = Quizzer::Controller::StatisticsManager.get_statistics.get_words
         columns = ["Rank", "Word", "Meaning", "Score", "Raw Score", "Asked", "Right", "Wrong", "Part", "Part at Wrong", "Sel Wrong"]
         sorted = words.to_a.sort {|a,b| b[1][:score] <=> a[1][:score] }
         data = []
@@ -56,6 +57,7 @@ module Quizzer
           data << [i+1, word_text, meaning, ((w[1][:score]*10000).round)/100.0, ((w[1][:raw_score]*1000).round)/1000.0, w[1][:asked], 
                    w[1][:right], w[1][:wrong], w[1][:participated], w[1][:part_at_wrong], w[1][:wrong_answered] ]
         end
+        
         tm = javax.swing.table.DefaultTableModel.new
 
         columns.each do |c|

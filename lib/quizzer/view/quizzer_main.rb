@@ -25,6 +25,7 @@ require 'view/action_button'
 require 'view/pretty_button'
 require 'view/border_highlight_button'
 require 'view/border_highlight_panel'
+require 'view/quizzer_frame'
 
 module Quizzer
   module View
@@ -37,7 +38,7 @@ module Quizzer
     import java.awt.Toolkit
     import java.awt.Color
   
-    class QuizzerMain < JFrame
+    class QuizzerMain < QuizzerFrame
       
       BORDER_COLOR = Color.new(0.7, 0.8, 0.6, 1.0)
       BORDER_HIGHLIGHT = Color.new(0.6, 0.8, 0.6, 1.0)
@@ -47,11 +48,16 @@ module Quizzer
       
       FONT_NAME = "Kristen ITC"
       
+      def self.getMainWindow
+        @@mainWindow
+      end
+      
       def initialize
         super("Quizzer")
+        @@mainWindow = self
         @@qm = Quizzer::View.get_controller(:manager)
-        @@st = Quizzer::View.get_controller(:statistics)
         @cm = Quizzer::View.get_controller(:configuration)
+        @word_database = Quizzer::View.get_controller(:dictionary)
         self.add_system_tray
         self.init_ui
       end
@@ -65,7 +71,7 @@ module Quizzer
         main_panel = JPanel.new(BorderLayout.new)
         
         @question_panel = JPanel.new(BorderLayout.new)
-        @stats_panel = StatisticsPanel.new(@@st)
+        @stats_panel = StatisticsPanel.new
         
         main_panel.add(@stats_panel, BorderLayout::EAST)
         main_panel.add(@question_panel, BorderLayout::CENTER)
@@ -94,20 +100,40 @@ module Quizzer
         
         self.getContentPane.add(main_panel)
         
-        self.ask(@@qm.get_question)
+        if @word_database.size(Model::Word) < 4
+          @no_words = true
+          self.set_stats
+          self.noWordsWarning
+        else
+          @no_words = false
+          self.ask(@@qm.get_question)  
+        end
+        
         self.setVisible(true)
       end
             
+      def noWordsWarning
+        @question_label.setText("<html>Not enough words in the dictionary to ask questions. Add/Import words in orther to start.</html>")
+      end
+      
       def statsText
-        stat = @@st.get_session
+        stat = Quizzer::Controller::StatisticsManager.get_statistics.get_session
         perc = stat[:questions] == 0 ? nil : (100 * stat[:correct])/stat[:questions]
         st = "<html>Session: Correct answered #{stat[:correct]}/#{stat[:questions]} (#{perc} %) Attempt map #{stat[:error_attempt].join('/')}"
-        stat = @@st.get_general
+        stat = Quizzer::Controller::StatisticsManager.get_statistics.get_general
         perc = stat[:questions] == 0 ? nil : (100 * stat[:correct])/stat[:questions]
         st += "<br>General: Correct answered #{stat[:correct]}/#{stat[:questions]} (#{perc} %) Attempt map #{stat[:error_attempt].join('/')}</html>"
       end
       
       def set_stats
+        if @no_words == true
+          #No words to ask, check if threshold was reached
+          if @word_database.size(Model::Word) >= 4
+            @no_words = false
+            self.ask(@@qm.get_question)
+          end
+        end
+        
         @stats_panel.updateStats
         @session_stats_text.setText(self.statsText)
       end
@@ -218,13 +244,19 @@ module Quizzer
       end
     end
     
+    import javax.swing.ImageIcon
+    import javax.swing.JButton
+    import javax.swing.JMenuBar
+    import javax.swing.JMenu
+    import javax.swing.JToolBar
+    
     class StatisticsPanel < JPanel
-      STATS = 4
-      def initialize(st)
+      STATS = 5#4
+      def initialize
         super(GridLayout.new)
         self.getLayout.setRows(STATS)
         
-        @st = st
+        self.addToolBar
         
         @total_score = StatView.new("Total Score")
         @avg_score   = StatView.new("Avg Score")
@@ -232,19 +264,71 @@ module Quizzer
           AddWords.new
         end
 
-        bt_stat = ActionButton.new("Words Details") do
-          Statistics.new
-        end
+        #bt_stat = ActionButton.new("Words Details") do
+        #  Statistics.new
+        #end
 
         #@total_score = StatView.new("Total Score", 0)
         self.add(@total_score)
         self.add(@avg_score)
         self.add(@known_words) 
-        self.add(bt_stat)
+        #self.add(bt_stat)
+      end
+      
+      def addToolBar
+        #menubar = JMenuBar.new
+        #fileMenu = JMenu.new "File"
+        #menubar.add fileMenu
+
+        toolbar = JToolBar.new
+
+        path = File.expand_path(File.dirname(__FILE__))
+        file = File.expand_path(path+"/../images/plus_32.png")
+        
+        iconAdd = ImageIcon.new(file)
+
+        addButton = JButton.new iconAdd
+        addButton.addActionListener do |e|
+          AddWords.new  
+        end
+        
+        toolbar.add addButton
+
+        file = File.expand_path(path+"/../images/upload.png")
+        
+        iconImport = ImageIcon.new(file)
+
+        importButton = JButton.new iconImport
+        importButton.addActionListener do |e|
+            ImportFiles.new
+        end
+        
+        toolbar.add importButton
+
+        file = File.expand_path(path+"/../images/word.png")
+        
+        iconList = ImageIcon.new(file)
+
+        listButton = JButton.new iconList
+        listButton.addActionListener do |e|
+          Statistics.new  
+        end
+
+        toolbar.add listButton
+
+
+        self.add toolbar #, BorderLayout::NORTH
+
+        #self.setJMenuBar menubar
+        
+        #self.setDefaultCloseOperation JFrame::EXIT_ON_CLOSE
+        #self.setSize 350, 250
+        #self.setLocationRelativeTo nil
+        #self.setVisible true
       end
       
       def updateStats
-        stat = @st.get_words_summary
+        stat = Quizzer::Controller::StatisticsManager.get_statistics.get_words_summary
         @known_words.setValue("#{stat[:known]} / #{stat[:amount]}")
         
         val = ( stat[:average_score] * 10000 ).round / 100.0

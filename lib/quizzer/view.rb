@@ -4,6 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'view/statistics'
 require 'view/quizzer_main'
 require 'view/add_words'
+require 'view/import_files'
 
 module Quizzer
   module View

@@ -34,8 +34,6 @@ module Quizzer
       
       database = Model::Database.new(options[:database_file])
       
-      puts "Dictionary has #{dictionary.size(Model::Word)} words"
-      
       #If set to import, import file and end execution
       if options[:action] == :import
         options[:file] = File.expand_path(options[:file])
@@ -68,7 +66,6 @@ module Quizzer
       Quizzer::View.add_controller(:dictionary, dictionary)
       Quizzer::View.add_controller(:manager, qm)
       Controller::StatisticsManager.set_database(database)
-      Quizzer::View.add_controller(:statistics, Controller::StatisticsManager.get_statistics)
       Quizzer::View.add_controller(:configuration, Controller::ConfigurationManager.new(dictionary, 0))
       Quizzer::View::run
       
